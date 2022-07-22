@@ -22,22 +22,22 @@ class CompassData {
       data: ["一", "二", "三", "四", "五", "六", "七", "八"]
     },
     {
-          name: ['后先天八卦', '先天八卦', '龙上八煞'],
-          startAngle: 0,
-          // fontSize: 18,
-          textColor: ['white', 'red', 'white'],
-          vertical: false,
-          togetherStyle: 'equally',
-          data: [
-            ['坎', '艮', '震', '巽', '离', '坤', '兑', '乾'],
-            ['☰', '☲', '☱', '☴', '☵', '☶', '☳', '☷'],
-            ["辰", "寅", "申", "酉", "亥", "卯", "巳", "午"]
-          ]
-        },
+      name: ['后先天八卦', '先天八卦', '龙上八煞'],
+      startAngle: 0,
+      // fontSize: 18,
+      textColor: ['white', 'red', 'white'],
+      vertical: false,
+      togetherStyle: 'equally',
+      data: [
+        ['坎', '艮', '震', '巽', '离', '坤', '兑', '乾'],
+        ['☰', '☲', '☱', '☴', '☵', '☶', '☳', '☷'],
+        ["辰", "寅", "申", "酉", "亥", "卯", "巳", "午"]
+      ]
+    },
     {
       name: '九星',
       startAngle: 0,
-     // fontSize: 18,
+      // fontSize: 18,
       textColor: 'white',
       //vertical:false,
       //togetherStyle: 'equally',
@@ -46,7 +46,7 @@ class CompassData {
     {
       name: '二十四山',
       startAngle: 0,
-    //  fontSize: 18,
+      //  fontSize: 18,
       textColor: 'white',
       //vertical:false,
       //togetherStyle: 'equally',
@@ -55,7 +55,7 @@ class CompassData {
     {
       name: '微盘二十四星',
       startAngle: 0,
-     // fontSize: 28,
+      // fontSize: 28,
       textColor: 'white',
       //vertical:false,
       //togetherStyle: 'equally',
@@ -64,7 +64,7 @@ class CompassData {
     {
       name: '透地六十龙',
       startAngle: 0,
-     // fontSize: 18,
+      // fontSize: 18,
       textColor: 'white',
       vertical: true,
       togetherStyle: 'equally',
@@ -73,7 +73,7 @@ class CompassData {
     {
       name: '透地六十龙旺相',
       startAngle: 0,
-     // fontSize: 18,
+      // fontSize: 18,
       textColor: 'white',
       vertical: false,
       //togetherStyle: 'equally',
@@ -132,11 +132,16 @@ class FengShuiCompass {
     borderWidth: 3,
     bordeeColor: 'aqua',
     /** 刻度样式 （bate） */
-    // scaleStyle: {minLineHeight,midLineHeight,maxLineHeight,numberTextSize},
+    scaleStyle: {
+      minLineHeight: 10,
+      midLineHeight: 15,
+      maxLineHeight: 20,
+      numberFontSize: 30
+    },
     /** 刻度高度 */
-    scaleHeight: 0 + 3 + 5,/** 3 = borderWidth， 5 = _LayerPadding  暂时不支持修改刻度样式*/
-   /** 天心十字 */
-    tianXinCross: { 
+    scaleHeight: 40 + 3 + 5,/** 3 = borderWidth， 5 = _LayerPadding  暂时不支持修改刻度样式*/
+    /** 天心十字 */
+    tianXinCross: {
       show: true,
       borderWidth: 3,
       bordeeColor: 'aqua'
@@ -173,7 +178,7 @@ class FengShuiCompass {
       this._layerHigh.push(this.Draw._caclLayerHigh(i, this.getLayerData(i).fontSize, this.getLayerData(i).vertical))
     }
 
-   /** test */
+    /** test */
 
 
   }
@@ -202,10 +207,10 @@ class FengShuiCompass {
   _getBorderColor() {
     return this.COMPASS.bordeeColor;
   }
-/**
- *  设置天下心十字 
- * （天心十字需要固定 暂时不使用）
- *  */
+  /**
+   *  设置天下心十字 
+   * （天心十字需要固定 暂时不使用）
+   *  */
   setTianXinCorss(show, width, color) {
     this.COMPASS.tianXinCross.show = typeof (show) == "boolean" ? show : true;
     this.COMPASS.tianXinCross.borderWidth = typeof (width) == "number" ? width : 3;
@@ -228,7 +233,7 @@ class FengShuiCompass {
   getLayerData(index) {
     return this.COMPASS.data[index];
   }
-/** 设置层数据 */
+  /** 设置层数据 */
   setLayerData(index, datas) {
     this.COMPASS.data[index] = {
       name: datas.name,
@@ -240,7 +245,7 @@ class FengShuiCompass {
       data: datas.data
     }
   }
-/** 设置宫填充 */
+  /** 设置宫填充 */
   setLatticeFill(filldata) {
     this._latticeFill = filldata;
     return this;
@@ -248,7 +253,7 @@ class FengShuiCompass {
   getLatticeFill() {
     return this._latticeFill;
   }
-/** 设置层填充 */
+  /** 设置层填充 */
   setLayerFill(filldata) {
     this._layerFill = filldata;
     return this;
@@ -259,7 +264,7 @@ class FengShuiCompass {
   getLayerPadding() {
     return this.COMPASS._LayerPadding;
   }
-/** 设置层内边距 */
+  /** 设置层内边距 */
   setLayerPadding(value) {
     this.COMPASS._LayerPadding = value;
     return this;
@@ -285,7 +290,7 @@ class FengShuiCompass {
   /**   获取层数据的数据长度  */
   getLayerDataLength(index) {
     let dataLength = 0;
-    if (this.getLayerData(index).data[0] instanceof Array) {   
+    if (this.getLayerData(index).data[0] instanceof Array) {
       dataLength = this.getLayerData(index).data[0].length;
     } else {
       dataLength = this.getLayerData(index).data.length;
@@ -303,11 +308,6 @@ class FengShuiCompass {
   getScaclHeight() {
     return this.COMPASS.scaleHeight;
   }
-/** 设置刻度高度- bate (小刻度，中刻度，大刻度，刻度数字大小) */
-  // setScaclHeight(minLineHeight,midLineHeight,maxLineHeight,numberTextSize){
-    
-  // }
-
 
   getlayersHigh() {
     return this._layerHigh;
@@ -317,6 +317,28 @@ class FengShuiCompass {
     this._layerHigh = layerHigh;
     return this;
   }
+
+/* 获取刻度样式 */
+  getScaclStyle(){
+    return this.COMPASS.scaleStyle;
+  }
+
+/* 设置刻度样式 */
+setScaclStyle(style){
+     this.COMPASS.scaleStyle = style;
+     return this;
+  }
+  /** 获取刻度字体大小 */
+  getScaclFontSize() {
+    return this.COMPASS.scaleStyle.numberFontSize;
+  }
+  /** 设置刻度字体大小 */
+  setScaclFontSize(fontsize) {
+    this.COMPASS.scaleStyle.numberFontSize = fontsize;
+    return this;
+  }
+
+
 
   _checkCompassData(cdata) {
     if (cdata != null)
@@ -434,7 +456,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
   }
 
   drawLayerText(clayer, layerIndex) {
-    console.log("TOGERTHER_STYLE_EMPTY",TOGERTHER_STYLE_EMPTY)
+    console.log("TOGERTHER_STYLE_EMPTY", TOGERTHER_STYLE_EMPTY)
     for (let i = 0; i < clayer.data.length; i++) {
       let startAngle = clayer.startAngle;
       let fontSize = clayer.fontSize;
@@ -466,7 +488,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
             } else if (clayer.data.length == 3) {
               let single = 360 / clayer.data[i].length;
               switch (i) {
-                case 0: index_Gaong =  - single / 3 + single * j;
+                case 0: index_Gaong = - single / 3 + single * j;
                   break;
                 case 1: index_Gaong = 0 + single * j;
                   break;
@@ -620,11 +642,11 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
     this.ctx.fill();
   }
 
-/* 计算角度 */
+  /* 计算角度 */
   rads(x) {
     return Math.PI * (x + CORRECTION_ANGLE) / 180;
   }
-/** 依次绘制所有 */
+  /** 依次绘制所有 */
   draw(ctx) {
     if (ctx) {
       let latfills = this.ObjCompass.getLatticeFill();
@@ -648,31 +670,32 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
       /**
        *   画刻度
        */
-      let averageHeight = (this.ObjCompass.getCenterPoint().x - this.ObjCompass.getTianChiRadiu()) / this.ObjCompass.getLayersLength();
+      // let averageHeight = (this.ObjCompass.getCenterPoint().x - this.ObjCompass.getTianChiRadiu()) / this.ObjCompass.getLayersLength();
+      let scaclStyle = this.ObjCompass.getScaclStyle();
       let xyrScalc = {
         x: this.ObjCompass.getCenterPoint().x,
         y: this.ObjCompass.getCenterPoint().y,
-        radius: this._getLayerRadiu(this.ObjCompass.getLayersLength()) + this.ObjCompass.getScaclHeight()
+        radius: this._getLayerRadiu(this.ObjCompass.getLayersLength()) + (this.ObjCompass.getScaclHeight() / 2)
       }
       let xyrScalcText = {
         x: this.ObjCompass.getCenterPoint().x,
         y: this.ObjCompass.getCenterPoint().y,
-        radius: xyrScalc.radius - 20
+        radius: xyrScalc.radius - scaclStyle.maxLineHeight * 2
       }
-      let fontSize = 16;
+      let fontSize = this.ObjCompass.getScaclFontSize();
       let textColor = 'red'
       let vertical = false;
 
       for (var i = 0; i < 360; i++) {
         if (i % 10 == 0) {
-          this._drawCircularLine(xyrScalc, this.rads(1 * i), 0, -10, 0, 10, 'red');
+          this._drawCircularLine(xyrScalc, this.rads(1 * i), 0, -10, 0, scaclStyle.maxLineHeight, 'red');
           this._drawCircularText(xyrScalcText, "" + i, this.rads(1 * i), fontSize, textColor, vertical)
         }
         else if (i % 5 == 0) {
-          this._drawCircularLine(xyrScalc, this.rads(1 * i), 0, -10, 0, 5)
+          this._drawCircularLine(xyrScalc, this.rads(1 * i), 0, -10, 0, scaclStyle.midLineHeight)
         }
         else {
-          this._drawCircularLine(xyrScalc, this.rads(1 * i), 0, -10, 0, 0)
+          this._drawCircularLine(xyrScalc, this.rads(1 * i), 0, -10, 0, scaclStyle.minLineHeight)
         }
       }
 
