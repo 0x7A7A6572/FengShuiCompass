@@ -2,7 +2,7 @@
  *  
  */
 
-/**  */
+/** 层内数据展示样式 */
 const [TOGERTHER_STYLE_EMPTY,
   TOGERTHER_STYLE_EQUALLY,
   TOGERTHER_STYLE_SON,
@@ -15,7 +15,7 @@ class CompassData {
     {
       name: '八数',
       startAngle: 0,
-      fontSize: 18,
+      // fontSize: 108,
       textColor: 'white',
       vertical: false,
       togetherStyle: 'empty',
@@ -24,7 +24,7 @@ class CompassData {
     {
           name: ['后先天八卦', '先天八卦', '龙上八煞'],
           startAngle: 0,
-          fontSize: 18,
+          // fontSize: 18,
           textColor: ['white', 'red', 'white'],
           vertical: false,
           togetherStyle: 'equally',
@@ -67,7 +67,7 @@ class CompassData {
      // fontSize: 18,
       textColor: 'white',
       vertical: true,
-      //togetherStyle: 'equally',
+      togetherStyle: 'equally',
       data: ["甲子", "丙子", "戊子", "庚子", "壬子", "乙丑", "丁丑", "己丑", "辛丑", "癸丑", "甲寅", "丙寅", "戊寅", "庚寅", "壬寅", "乙卯", "丁卯", "己卯", "辛卯", "癸卯", "甲辰", "丙辰", "戊辰", "庚辰", "壬辰", "乙巳", "丁巳", "己巳", "辛巳", "癸巳", "甲午", "丙午", "戊午", "庚午", "壬午", "乙未", "丁未", "己未", "辛未", "癸未", "甲申", "丙申", "戊申", "庚申", "壬申", "乙酉", "丁酉", "己酉", "辛酉", "癸酉", "甲戌", "丙戌", "戊戌", "庚戌", "壬戌", "乙亥", "丁亥", "己亥", "辛亥", "癸亥"]
     },
     {
@@ -124,19 +124,24 @@ class CompressUtil {
 class FengShuiCompass {
   Draw = new _DrawCompass(this);
   COMPASS = {
-    radius: 500,
+    radius: 500, //默认500
     centralPoint: { x: 500, y: 500 },
     selfAdaption: true,
+    defaultFontSize: 30,
     _LayerPadding: 5,
     borderWidth: 3,
     bordeeColor: 'aqua',
-    scaleHeight: 40 + 3 + 5,/** 3 => borderWidth 5 => _LayerPadding  暂时不支持修改刻度样式*/
-    tianXinCross: {
+    /** 刻度样式 （bate） */
+    // scaleStyle: {minLineHeight,midLineHeight,maxLineHeight,numberTextSize},
+    /** 刻度高度 */
+    scaleHeight: 0 + 3 + 5,/** 3 = borderWidth， 5 = _LayerPadding  暂时不支持修改刻度样式*/
+   /** 天心十字 */
+    tianXinCross: { 
       show: true,
       borderWidth: 3,
       bordeeColor: 'aqua'
     },
-    tianChiRadiu: 50,
+    tianChiRadiu: 100,
     data: []
   };
   /** 弃用_fontSpace = 5; 用 LayerPadding 
@@ -159,18 +164,17 @@ class FengShuiCompass {
     return this;
   }
 
+  /**
+   * 初始化层数据 并作一些调整
+   */
   init() {
 
     for (let i = 0; i < this.getLayersLength(); i++) {
       this._layerHigh.push(this.Draw._caclLayerHigh(i, this.getLayerData(i).fontSize, this.getLayerData(i).vertical))
     }
 
-    /* this.Draw.initLayersHight( 
-       ((this.getRadius() - this.getTianChiRadiu() - this.getScaclHeight() )
-           /  
-        this.getLayersLength() )
-        - 
-         (this._getBorderWidth() * (this.getLayersLength())) ); */
+   /** test */
+
 
   }
 
@@ -198,7 +202,10 @@ class FengShuiCompass {
   _getBorderColor() {
     return this.COMPASS.bordeeColor;
   }
-
+/**
+ *  设置天下心十字 
+ * （天心十字需要固定 暂时不使用）
+ *  */
   setTianXinCorss(show, width, color) {
     this.COMPASS.tianXinCross.show = typeof (show) == "boolean" ? show : true;
     this.COMPASS.tianXinCross.borderWidth = typeof (width) == "number" ? width : 3;
@@ -221,7 +228,7 @@ class FengShuiCompass {
   getLayerData(index) {
     return this.COMPASS.data[index];
   }
-
+/** 设置层数据 */
   setLayerData(index, datas) {
     this.COMPASS.data[index] = {
       name: datas.name,
@@ -233,7 +240,7 @@ class FengShuiCompass {
       data: datas.data
     }
   }
-
+/** 设置宫填充 */
   setLatticeFill(filldata) {
     this._latticeFill = filldata;
     return this;
@@ -241,6 +248,7 @@ class FengShuiCompass {
   getLatticeFill() {
     return this._latticeFill;
   }
+/** 设置层填充 */
   setLayerFill(filldata) {
     this._layerFill = filldata;
     return this;
@@ -248,10 +256,10 @@ class FengShuiCompass {
   getLayerFill() {
     return this._layerFill;
   }
-
   getLayerPadding() {
     return this.COMPASS._LayerPadding;
   }
+/** 设置层内边距 */
   setLayerPadding(value) {
     this.COMPASS._LayerPadding = value;
     return this;
@@ -274,9 +282,10 @@ class FengShuiCompass {
   getLayersLength() {
     return this.COMPASS.data.length;
   }
+  /**   获取层数据的数据长度  */
   getLayerDataLength(index) {
     let dataLength = 0;
-    if (this.getLayerData(index).data[0] instanceof Array) {
+    if (this.getLayerData(index).data[0] instanceof Array) {   
       dataLength = this.getLayerData(index).data[0].length;
     } else {
       dataLength = this.getLayerData(index).data.length;
@@ -294,6 +303,10 @@ class FengShuiCompass {
   getScaclHeight() {
     return this.COMPASS.scaleHeight;
   }
+/** 设置刻度高度- bate (小刻度，中刻度，大刻度，刻度数字大小) */
+  // setScaclHeight(minLineHeight,midLineHeight,maxLineHeight,numberTextSize){
+    
+  // }
 
 
   getlayersHigh() {
@@ -311,7 +324,7 @@ class FengShuiCompass {
         if (cdata[i].name instanceof Array ? typeof (cdata[i][0]) != "string" ? false : true : typeof (cdata[i].name) != "string") { console.warn("index:" + i + " 罗盘第" + (i + 1) + "层数据,参数name应为非空字符串"); cdata[i].name = cdata[i].name.toString(); }
         if (cdata[i].startAngle == null || cdata[i].startAngle > 360 || cdata[i].startAngle < 0) { cdata[i].startAngle = 0; console.warn("罗盘第" + i + "层数据   0 < startAngle < 360  否则 = 0"); }
         if (typeof (cdata[i].vertical) != 'boolean') { cdata[i].vertical = false; }
-        if (typeof (cdata[i].fontSize) != 'number') { cdata[i].fontSize = 18; }
+        if (typeof (cdata[i].fontSize) != 'number') { cdata[i].fontSize = this.COMPASS.defaultFontSize; }
         /* 根据罗盘半径自动校准字体大小
          * 除天池部分的半径 平均给每一层 考虑层间距
          */
@@ -339,19 +352,20 @@ class _DrawCompass {
     this.ObjCompass = compassData;
   }
 
+  /** 获取指定层的半径 */
   _getLayerRadiu(index) {
     let radius = 0 + this.ObjCompass.getTianChiRadiu() + this.ObjCompass._getBorderWidth() * 2;
-    for (let i = 0; i < index + 1; i++) {
+    for (let i = 0; i < index; i++) {
       radius += this.ObjCompass.getlayersHigh()[i];
     }
     return radius;
   }
 
-  /* 计算每一层的高  （因自定义宽高存在未解决问题 -- 暂时弃用）*/
+  /* 计算每一层的高  （自定义宽高存在未解决问题 ）*/
   _caclLayerHigh(layerIndex, layerFonSize, textVertical) {
     let clayer = this.ObjCompass.getLayerData(layerIndex);
     let layerHight = 0;
-    let MaxWidth = 0;
+    // let MaxWidth = 0;
     let layerTextLentgh = clayer.data[0].length;
     if (clayer.data[0] instanceof Array) {
       /** 同宫的数据处理 */
@@ -374,6 +388,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
 
       /** 自动调整顺便设置fonsize */
       let textsHeight = layerFonSize * layerTextLentgh;
+      // console.log(textsHeight,layerFonSize ,layerTextLentgh)
       this._correctFonSize(layerIndex, clayer, layerHight, textsHeight, layerTextLentgh)
 
       /** 计算MaxWidth */
@@ -419,7 +434,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
   }
 
   drawLayerText(clayer, layerIndex) {
-    console.log(TOGERTHER_STYLE_EMPTY)
+    console.log("TOGERTHER_STYLE_EMPTY",TOGERTHER_STYLE_EMPTY)
     for (let i = 0; i < clayer.data.length; i++) {
       let startAngle = clayer.startAngle;
       let fontSize = clayer.fontSize;
@@ -434,7 +449,6 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
         radius: this._getLayerRadiu(layerIndex)
       }
       if (clayer.data[i] instanceof Array) {
-
         for (var j = 0; j < clayer.data[i].length; j++) {
           str = clayer.data[i][j];
           if (clayer.data.length > 3) { console.error("一层不能超过3个同宫"); break; }
@@ -442,19 +456,21 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
           /* 同宫样式 -- 平分 */
           if (togetherStyle == TOGERTHER_STYLE_EQUALLY) {
             if (clayer.data.length == 2) {
+              let single = 360 / clayer.data[i].length;
               switch (i) {
-                case 0: index_Gaong = - (360 / clayer.data[i].length) / 2 / 2;
+                case 0: index_Gaong = - single / 2 / 2;
                   break;
-                case 1: index_Gaong = 0 + (360 / clayer.data[i].length) / 2 / 2;
+                case 1: index_Gaong = 0 + single / 2 / 2;
                   break;
               }
             } else if (clayer.data.length == 3) {
+              let single = 360 / clayer.data[i].length;
               switch (i) {
-                case 0: index_Gaong = - (360 / clayer.data[i].length) / 3;
+                case 0: index_Gaong =  - single / 3 + single * j;
                   break;
-                case 1: index_Gaong = 0;
+                case 1: index_Gaong = 0 + single * j;
                   break;
-                case 2: index_Gaong = (360 / clayer.data[i].length) / 3;
+                case 2: index_Gaong = single / 3 + single * j;
                   break;
               }
             }
@@ -559,9 +575,10 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
     this.ctx.closePath();
     this.ctx.stroke();
     /* 画宫隔断 */
-    for (var j = 0; j < this.ObjCompass.getLayerData(index).data.length; j++) {
+    let singleLenght = this.ObjCompass.getLayerDataLength(index);
+    for (let j = 0; j < singleLenght; j++) {
       this._drawCircularLine(xyr,
-        this.rads((360 / this.ObjCompass.getLayerDataLength(index)) * j + (360 / this.ObjCompass.getLayerDataLength(index)) / 2)
+        this.rads((360 / singleLenght) * j + (360 / singleLenght) / 2)
         , 0, layerHeight[index] / 2, 0, -layerHeight[index] / 2);
     }
   }
@@ -603,11 +620,11 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
     this.ctx.fill();
   }
 
-
+/* 计算角度 */
   rads(x) {
     return Math.PI * (x + CORRECTION_ANGLE) / 180;
   }
-
+/** 依次绘制所有 */
   draw(ctx) {
     if (ctx) {
       let latfills = this.ObjCompass.getLatticeFill();
@@ -635,7 +652,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
       let xyrScalc = {
         x: this.ObjCompass.getCenterPoint().x,
         y: this.ObjCompass.getCenterPoint().y,
-        radius: this._getLayerRadiu(this.ObjCompass.getLayersLength() - 1) + this.ObjCompass.getScaclHeight()
+        radius: this._getLayerRadiu(this.ObjCompass.getLayersLength()) + this.ObjCompass.getScaclHeight()
       }
       let xyrScalcText = {
         x: this.ObjCompass.getCenterPoint().x,
