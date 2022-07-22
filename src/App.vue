@@ -1,14 +1,16 @@
 <script setup>
 import FengShuiCompass from "./components/FengShuiCompass.vue";
+import { ref } from "vue";
+let rotate = ref(0);
 </script>
 
 <template>
   <div class="gemc-layout">
-    <FengShuiCompass id="gemc" :width="2000" :height="2000"></FengShuiCompass>
+    <FengShuiCompass id="gemc" :width="2000" :height="2000" v-model:rotate="rotate"></FengShuiCompass>
     <div class="contorl">
       <div class="control-rotate">
         旋转罗盘
-        <input type="range" min="0" max="100" step="5" />
+        <input type="range" min="0" max="100" step="" v-model="rotate"/>
       </div>
       <div class="line"></div>
 
@@ -51,6 +53,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  background: rgb(46, 47, 46);
 }
 .gemc-layout {
   display: flex;
@@ -81,7 +84,6 @@ body {
 #gemc {
   height: 500px;
   display: block;
-  background: rgb(46, 47, 46);
 }
 .line {
   background-color: aqua;

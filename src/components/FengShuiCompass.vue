@@ -1,5 +1,7 @@
 <template>
-  <canvas ref="canvasFengShuiCompass">
+  <canvas ref="canvasFengShuiCompass" :style="{
+    transform: 'rotate(' + rotate + 'deg)'
+  }">
     你的浏览器不支持HTML5 Canvas标签
   </canvas>
 </template>
@@ -11,6 +13,7 @@ import { ref, onMounted } from "vue";
 const props = defineProps({
     width: Number,
     height: Number,
+    rotate: String
   }) 
   // components:{FengShuiCompass},
     let canvasFengShuiCompass = ref(null);
