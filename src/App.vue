@@ -82,7 +82,7 @@ body {
   width: 100%;
 }
 #gemc {
-  height: 500px;
+  height: 100vh;
   display: block;
 }
 .line {
