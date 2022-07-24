@@ -38,7 +38,7 @@ class CompassData {
       name: '九星',
       startAngle: 0,
       // fontSize: 18,
-      textColor: 'white',
+      textColor: 'aque',
       //vertical:false,
       //togetherStyle: 'equally',
       data: ["贪", "巨", "禄", "文", "武", "廉", "破", "辅", "弼"] //["白", "黑", "碧", "绿", "黄", "白", "赤", "白", "紫"]], //九星宿var _9_XING_SE = ["白", "黑", "碧", "绿", "黄", "白", "赤", "白", "紫"] //九星对应色
@@ -74,17 +74,21 @@ class CompassData {
       name: '透地六十龙旺相',
       startAngle: 0,
       // fontSize: 18,
-      textColor: 'white',
+      textColor: 'aque',
       vertical: false,
       //togetherStyle: 'equally',
       data: ["三", "八", "二", "一", "四", "三", "六", "一", "三", "九", "八", "三", "三", "七", "三", "四", "五", "一", "三", "五", "四", "七", "二", "八", "四", "六", "一", "七", "三", "六", "五", "九", "二", "四", "一", "五", "三", "五", "三", "三", "三", "八", "五", "七", "一", "八", "三", "七", "七", "九", "八", "五", "二", "九", "五", "七", "九", "四", "九", "五"]
     }
   ];
-  /** 获取层级数据 */
+  /** 下标获取层级具体数据 */
+  getDataByIndex(index) {
+    return this.data[index].data;
+  }
+  /** 名字获取层级数据 */
   getDataByName(name) {
     return this.data[name].data;
   }
-  /** 获取层级初始角度 */
+  /** 名字获取层级初始角度 */
   getAngleByName(name) {
     return this.data[name].startAngle;
   }
@@ -318,15 +322,15 @@ class FengShuiCompass {
     return this;
   }
 
-/* 获取刻度样式 */
-  getScaclStyle(){
+  /* 获取刻度样式 */
+  getScaclStyle() {
     return this.COMPASS.scaleStyle;
   }
 
-/* 设置刻度样式 */
-setScaclStyle(style){
-     this.COMPASS.scaleStyle = style;
-     return this;
+  /* 设置刻度样式 */
+  setScaclStyle(style) {
+    this.COMPASS.scaleStyle = style;
+    return this;
   }
   /** 获取刻度字体大小 */
   getScaclFontSize() {

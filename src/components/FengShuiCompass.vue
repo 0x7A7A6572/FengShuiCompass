@@ -9,14 +9,42 @@
 <script setup>
 import { FengShuiCompass, CompassData } from "./compass-main.js";
 // import  CompassData  from "./compass-redata.js";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, onUpdated   } from "vue";
 const props = defineProps({
     width: Number,
     height: Number,
-    rotate: String
+    rotate: String,
+    compassData: {
+      type: Object,
+      default: new CompassData().getAllData()
+    },
+    layerFilt: {
+      type: Array,
+      default: []
+    },
   }) 
+
+const fs = new FengShuiCompass();
+let ctx = null;
   // components:{FengShuiCompass},
-    let canvasFengShuiCompass = ref(null);
+let canvasFengShuiCompass = ref(null);
+onUpdated(() => {
+      console.log("props:",props)
+    })
+watch(() => props.layerFilt,(newVal)=>{
+  console.log("change!!!")
+  if(ctx != null){
+  fs.setLatticeFill([
+          [1, 3, "red"],
+          [3, 3, "blue"],
+        ]).setLayerFill([[4, "red"]])
+        .setCompassData(props.compassData)
+        .draw(ctx)
+  }
+
+    
+})
+
     onMounted(() => {
       console.log(canvasFengShuiCompass.value);
 
@@ -25,9 +53,7 @@ const props = defineProps({
       var canvas = canvasFengShuiCompass.value;
       canvas.width = props.width;
       canvas.height = props.height;
-      var ctx = canvas.getContext("2d");
-      const fs = new FengShuiCompass();
-      let cpData = new CompassData().getAllData();
+      ctx = canvas.getContext("2d");
 
       // console.log("props", props);
       fs.setCenterPoint(props.width / 2, props.height / 2)
@@ -43,8 +69,16 @@ const props = defineProps({
           maxLineHeight: 25,
           numberFontSize: 30,
         })
-        .setCompassData(cpData) //必须在配置所有基本数据完成之后执行
+        .setCompassData(props.compassData) //必须在配置所有基本数据完成之后执行
         .draw(ctx); //draw 必须setCompassData完成之后执行 终止链式
+
+        // setTimeout(()=>{
+        //   console.log(fs);
+        //   fs.setLatticeFill([
+        //   [1, 3, "red"],
+        //   [3, 3, "blue"],
+        // ]).setLayerFill([[4, "red"]]).setCompassData(props.compassData).draw(ctx)
+        // },5000)
     });
 
 </script>
