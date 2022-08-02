@@ -37,7 +37,7 @@ class CompassData {
     {
       name: '九星',
       startAngle: 0,
-      // fontSize: 18,
+      fontSize: 58,
       textColor: 'aque',
       //vertical:false,
       //togetherStyle: 'equally',
@@ -146,7 +146,7 @@ class FengShuiCompass {
     scaleHeight: 40 + 3 + 5,/** 3 = borderWidth， 5 = _LayerPadding  暂时不支持修改刻度样式*/
     /** 天心十字 */
     tianXinCross: {
-      show: true,
+      show: false,
       borderWidth: 3,
       bordeeColor: 'aqua'
     },
@@ -460,7 +460,6 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
   }
 
   drawLayerText(clayer, layerIndex) {
-    console.log("TOGERTHER_STYLE_EMPTY", TOGERTHER_STYLE_EMPTY)
     for (let i = 0; i < clayer.data.length; i++) {
       let startAngle = clayer.startAngle;
       let fontSize = clayer.fontSize;
@@ -524,7 +523,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
     let index = 0;
     let character;
 
-    this.ctx.save();
+    // this.ctx.save();
     this.ctx.fillStyle = textColor;
     this.ctx.font = fontSize + 'px 楷书';
     this.ctx.textAlign = 'center';
@@ -550,7 +549,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
       this.ctx.fillText(string, 0, 0);
       this.ctx.restore();
     }
-    this.ctx.restore();
+    // this.ctx.restore();
   }
 
 
@@ -633,7 +632,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
 
   /*  宫填充 */
   latticeFill(latticeIndex, layerIndex, fillColor) {
-    let tianChiHight = this.ObjCompass.getTianChiRadiu();
+    // let tianChiHight = this.ObjCompass.getTianChiRadiu();
     let centerPoint = this.ObjCompass.getCenterPoint();
     let layerHeight = this.ObjCompass.getlayersHigh();
     let a = (360 / this.ObjCompass.getLayerDataLength(layerIndex)) * latticeIndex - (360 / this.ObjCompass.getLayerDataLength(layerIndex)) / 2;
