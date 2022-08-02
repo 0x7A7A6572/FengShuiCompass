@@ -57,7 +57,7 @@ class CompassData {
       startAngle: 0,
       // fontSize: 28,
       textColor: 'white',
-      vertical:false,
+      vertical: false,
       //togetherStyle: 'equally',
       data: ["天辅", "天垒", "天汉", "天厨", "天市", "天桔", "天苑", "天衡", "天官", "天罡", "太乙", "天屏", "太微", "天马", "南极", "天常", "天钺", "天关", "天潢", "少微", "天乙", "天魁", "天厩", "天皇"]
     },
@@ -130,7 +130,7 @@ class FengShuiCompass {
   COMPASS = {
     radius: 500, //默认500
     centralPoint: { x: 500, y: 500 },
-    selfAdaption: true,
+    // selfAdaption: true,
     defaultFontSize: 30,
     _LayerPadding: 5,
     borderWidth: 3,
@@ -150,7 +150,7 @@ class FengShuiCompass {
     //   borderWidth: 3,
     //   bordeeColor: 'aqua'
     // },
-    tianChiRadiu: 100,
+    tianChiRadiu: 80,
     data: []
   };
   /** 弃用_fontSpace = 5; 用 LayerPadding 
@@ -195,7 +195,7 @@ class FengShuiCompass {
   getCenterPoint() { return this.COMPASS.centralPoint; }
   /* 罗盘半径,默认500*/
   setRadius(rad) {
-    this.COMPASS.radius = typeof (rad) == "number" ? rad : 500;
+    this.COMPASS.radius = typeof (rad) == "number" ? rad : this.COMPASS.radius;
     return this;
   }
   getRadius() { return this.COMPASS.radius; }
@@ -274,20 +274,20 @@ class FengShuiCompass {
     return this;
   }
 
-  isSelfAdaption() {
-    return this.COMPASS.selfAdaption;
-  }
-  setSelfAdaption(boolean) {
-    this.selfAdaption = boolean;
-    return this;
-  }
-  getRadius() {
-    return this.COMPASS.radius;
-  }
-  setRadius(value) {
-    this.COMPASS.radius = value;
-    return this;
-  }
+  // isSelfAdaption() {
+  //   return this.COMPASS.selfAdaption;
+  // }
+  // setSelfAdaption(boolean) {
+  //   this.selfAdaption = boolean;
+  //   return this;
+  // }
+  // getRadius() {
+  //   return this.COMPASS.radius;
+  // }
+  // setRadius(value) {
+  //   this.COMPASS.radius = value;
+  //   return this;
+  // }
   getLayersLength() {
     return this.COMPASS.data.length;
   }
@@ -354,7 +354,7 @@ class FengShuiCompass {
         /* 根据罗盘半径自动校准字体大小
          * 除天池部分的半径 平均给每一层 考虑层间距
          */
-        if (this.COMPASS.selfAdaption) { /*cdata[i].fontSize = cdata[i].vertical == true ? (this.COMPASS.radius - this.COMPASS.tianChiRadiu - (this.COMPASS._LayerPadding * 2)) / cdata.length : this.COMPASS.radius - this.COMPASS.tianChiRadiu - (this.COMPASS._LayerPadding * 2)*/ }
+        // if (this.COMPASS.selfAdaption) { cdata[i].fontSize = cdata[i].vertical == true ? (this.COMPASS.radius - this.COMPASS.tianChiRadiu - (this.COMPASS._LayerPadding * 2)) / cdata.length : this.COMPASS.radius - this.COMPASS.tianChiRadiu - (this.COMPASS._LayerPadding * 2) }
         if (cdata[i].togetherStyle != 'empty' && cdata[i].togetherStyle != 'son' && cdata[i].togetherStyle != 'equally') {
           cdata[i].togetherStyle = 'empty';
         } else if (cdata[i].togetherStyle == 'son' || cdata[i].togetherStyle == 'equally') {
@@ -380,7 +380,7 @@ class _DrawCompass {
 
   /** 获取指定层的半径 */
   _getLayerRadiu(index) {
-    let radius = 0 + this.ObjCompass.getTianChiRadiu() + this.ObjCompass._getBorderWidth() * 2;
+    let radius = 0 + this.ObjCompass.getTianChiRadiu() + this.ObjCompass._getBorderWidth();
     for (let i = 0; i < index; i++) {
       radius += this.ObjCompass.getlayersHigh()[i];
     }
@@ -397,36 +397,47 @@ class _DrawCompass {
       /** 同宫的数据处理 */
       layerTextLentgh = clayer.data[0][0].length;
     }
-    layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
+    // layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
+    layerHight = ((this.ObjCompass.getRadius() - this.ObjCompass.getTianChiRadiu() - this.ObjCompass.getScaclHeight())
+      /
+      this.ObjCompass.getLayersLength())
+      // -
+      // (this.ObjCompass._getBorderWidth() * (this.ObjCompass.getLayersLength()));
+    console.log("层高：",
+      layerHight, " 半径：",
+      this.ObjCompass.getRadius(),
+      "天池半径：", this.ObjCompass.getTianChiRadiu(),
+      "刻度半径：", this.ObjCompass.getScaclHeight(),
+      "层数：", this.ObjCompass.getLayersLength(),
+      "线条宽度", this.ObjCompass._getBorderWidth())
+    // if (this.ObjCompass.isSelfAdaption()) {
+    /** 自动调整以罗盘半径为基数 平分再调整 */
 
-    if (this.ObjCompass.isSelfAdaption()) {
-      /** 自动调整以罗盘半径为基数 平分再调整 */
+    // layerHight = ((this.ObjCompass.getRadius() - this.ObjCompass.getTianChiRadiu() - this.ObjCompass.getScaclHeight())
+    //   /
+    //   this.ObjCompass.getLayersLength())
+    //   -
+    //   (this.ObjCompass._getBorderWidth() * (this.ObjCompass.getLayersLength()));
 
-      layerHight = ((this.ObjCompass.getRadius() - this.ObjCompass.getTianChiRadiu() - this.ObjCompass.getScaclHeight())
-        /
-        this.ObjCompass.getLayersLength())
-        -
-        (this.ObjCompass._getBorderWidth() * (this.ObjCompass.getLayersLength()));
-
-      /*if (layerHight > (layerFonSize * 1.5) + this.ObjCompass.getLayerPadding() * 2) {
+    /*if (layerHight > (layerFonSize * 1.5) + this.ObjCompass.getLayerPadding() * 2) {
 layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);     
 }*/
 
-      /** 自动调整顺便设置fonsize */
-      let textsHeight = layerFonSize * layerTextLentgh;
-      // console.log(textsHeight,layerFonSize ,layerTextLentgh)
-      this._correctFonSize(layerIndex, clayer, layerHight, textsHeight, layerTextLentgh)
+    /** 自动调整顺便设置fonsize */
+    // let textsHeight = layerFonSize * layerTextLentgh;
+    // console.log(textsHeight,layerFonSize ,layerTextLentgh)
+    // this._correctFonSize(layerIndex, clayer, layerHight, textsHeight, layerTextLentgh)
 
-      /** 计算MaxWidth */
-      /* let C = 2 * Math.PI * layerHight;
-       if (ctx.measureText(clayer.data.join()).width > C) {
-         if (clayer.data[0] instanceof Array) {
-           MaxWidth = (C / (clayer.data.length * clayer.data[0].length)) - (this.ObjCompass.getLayerPadding() * 2);
-         } else {
-           MaxWidth = (C / clayer.data.length) - (this.ObjCompass.getLayerPadding() * 2);
-         }
-       } */
-    }
+    /** 计算MaxWidth */
+    /* let C = 2 * Math.PI * layerHight;
+     if (ctx.measureText(clayer.data.join()).width > C) {
+       if (clayer.data[0] instanceof Array) {
+         MaxWidth = (C / (clayer.data.length * clayer.data[0].length)) - (this.ObjCompass.getLayerPadding() * 2);
+       } else {
+         MaxWidth = (C / clayer.data.length) - (this.ObjCompass.getLayerPadding() * 2);
+       }
+     } */
+    // }
     return layerHight;
 
   }
@@ -474,7 +485,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
         radius: this._getLayerRadiu(layerIndex)
       }
       if (clayer.data[i] instanceof Array) {
-        console.log("textColor",textColor)
+        console.log("textColor", textColor)
         textColor = clayer.textColor[i];
         for (var j = 0; j < clayer.data[i].length; j++) {
           str = clayer.data[i][j];
@@ -615,7 +626,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
     let tianChiHight = this.ObjCompass.getTianChiRadiu();
     this.ctx.strokeStyle = this.ObjCompass._getBorderColor();
     this.ctx.lineWidth = this.ObjCompass._getBorderWidth();
-    this.ctx.arc(centerPoint.x, centerPoint.y, tianChiHight + tianChiHight / 2, 0, Math.PI * 2, false);
+    this.ctx.arc(centerPoint.x, centerPoint.y, tianChiHight, 0, Math.PI * 2, false);
     this.ctx.stroke();
   }
 
@@ -633,7 +644,7 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
 
   /*  宫填充 */
   latticeFill(latticeIndex, layerIndex, fillColor) {
-    // let tianChiHight = this.ObjCompass.getTianChiRadiu();
+    let tianChiHight = this.ObjCompass.getTianChiRadiu();
     let centerPoint = this.ObjCompass.getCenterPoint();
     let layerHeight = this.ObjCompass.getlayersHigh();
     let a = (360 / this.ObjCompass.getLayerDataLength(layerIndex)) * latticeIndex - (360 / this.ObjCompass.getLayerDataLength(layerIndex)) / 2;

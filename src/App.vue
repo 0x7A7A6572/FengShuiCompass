@@ -201,8 +201,10 @@ body {
   min-height: inherit;
 }
 #gemc {
-  height: 100vh;
-  width: 100vh;
+  /* 为了视觉上看起来不奇怪，添加了margin*/
+  height: calc(100vh - 100px);
+  width: calc(100vh - 100px);
+  margin: 50px;
 }
 .line {
   background-color: aqua;
