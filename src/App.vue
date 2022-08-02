@@ -23,11 +23,14 @@ let layerFilt = ref([]);
 let latticeFill = ref([]);
 // 刻度样式
 let scaclStyle = ref({
-          minLineHeight: 10,
-          midLineHeight: 25,
-          maxLineHeight: 25,
-          numberFontSize: 30,
-        })
+  minLineHeight: 10,
+  midLineHeight: 25,
+  maxLineHeight: 25,
+  numberFontSize: 30,
+});
+
+//显示隐藏天心十字
+let isShowTianxinCross = ref(true);
 
 function getDataByIndex() {
   return compassDataObj.getDataByIndex(selectLayer.value);
@@ -92,6 +95,8 @@ function changeLatticeFill() {
       v-model:layerFilt="layerFilt"
       v-model:latticeFill="latticeFill"
       :scaclStyle="scaclStyle"
+      :isShowTianxinCross="isShowTianxinCross"
+      :tianxinCrossStyle="{ color: 'red', lineWidth: 10 }"
     ></FengShuiCompass>
     <div class="contorl">
       <div class="control-rotate">
@@ -121,12 +126,27 @@ function changeLatticeFill() {
           </select>
           <input type="color" v-model="selectLatticeColor" @change="changeLatticeFill" />
         </div>
+     <div class="line"></div>
+        <div>
+          隐藏/显示天心十字:
+          <label class="switch">
+            <input type="checkbox" v-model="isShowTianxinCross"/>
+            <div class="slider"></div>
+          </label>
+        </div>
       </div>
-      <div class="line"></div>
 
+      <div class="line"></div>
       <div class="control-data">
         数据
-        <textarea disabled type="range" min="0" max="100" step="5" :value="JSON.stringify(compassData)"></textarea>
+        <textarea
+          disabled
+          type="range"
+          min="0"
+          max="100"
+          step="5"
+          :value="JSON.stringify(compassData)"
+        ></textarea>
       </div>
       <div class="line"></div>
     </div>
@@ -175,10 +195,14 @@ body {
 .control-data textarea {
   font-size: small;
   width: 100%;
+  background-color: #2c3e50;
+  color: aqua;
+  height: max-content;
+  min-height: inherit;
 }
 #gemc {
   height: 100vh;
-  display: block;
+  width: 100vh;
 }
 .line {
   background-color: aqua;
@@ -195,10 +219,54 @@ select {
   margin-left: 5px;
   color: aqua;
 }
-textarea{
-  background-color: #2c3e50;
-  color: aqua;
-  height: max-content;
-  min-height: inherit;
+
+/** 开关按钮样式 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: aqua;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px aqua;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(20px);
+  -ms-transform: translateX(20px);
+  transform: translateX(20px);
 }
 </style>
