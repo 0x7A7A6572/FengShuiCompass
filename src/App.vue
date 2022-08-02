@@ -4,16 +4,30 @@ import { CompassData } from "./components/compass-main.js";
 
 import { ref, reactive } from "vue";
 let compassDataObj = new CompassData();
-
+//旋转角度
 let rotate = ref(0);
+//选择的层数
 let selectLayer = ref("0");
+//选择层的填充色
 let selectLayerColor = ref("#ff0000");
+//选择的宫
 let selectLattice = ref("");
+//选择宫的填充色
 let selectLatticeColor = ref("#00ff00");
+//所有层的罗盘数据
 let compassData = ref(compassDataObj.getAllData());
-console.log(compassDataObj.getAllData(), compassData.value)
+// console.log(compassDataObj.getAllData(), compassData.value)
+//存储层的填充数据
 let layerFilt = ref([]);
+//存储宫的填充数据
 let latticeFill = ref([]);
+// 刻度样式
+let scaclStyle = ref({
+          minLineHeight: 10,
+          midLineHeight: 25,
+          maxLineHeight: 25,
+          numberFontSize: 30,
+        })
 
 function getDataByIndex() {
   return compassDataObj.getDataByIndex(selectLayer.value);
@@ -77,6 +91,7 @@ function changeLatticeFill() {
       :compassData="compassData"
       v-model:layerFilt="layerFilt"
       v-model:latticeFill="latticeFill"
+      :scaclStyle="scaclStyle"
     ></FengShuiCompass>
     <div class="contorl">
       <div class="control-rotate">
@@ -134,6 +149,8 @@ body {
 .gemc-layout {
   display: flex;
   overflow: hidden;
+  width: 100vw;
+  height: 100vh;
 }
 .contorl {
   background-color: rgb(35, 35, 35);
