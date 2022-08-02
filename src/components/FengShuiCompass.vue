@@ -1,4 +1,5 @@
 <template>
+
   <canvas
     ref="canvasFengShuiCompass"
     :style="{
@@ -29,6 +30,7 @@ const props = defineProps({
     type: Array,
     default: [],
   },
+  scaclStyle: Object
 });
 
 const fs = new FengShuiCompass();
@@ -52,12 +54,7 @@ watch(
       );
       fs.setLatticeFill(props.latticeFill)
         .setLayerFill(props.layerFilt)
-        .setScaclStyle({
-          minLineHeight: 10,
-          midLineHeight: 25,
-          maxLineHeight: 25,
-          numberFontSize: 30,
-        })
+        .setScaclStyle(props.scaclStyle)
         .setCompassData(props.compassData)
         .draw(ctx);
     }
