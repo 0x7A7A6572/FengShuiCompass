@@ -1,7 +1,10 @@
 <template>
-  <canvas ref="canvasFengShuiCompass" :style="{
-    transform: 'rotate(' + rotate + 'deg)'
-  }">
+  <canvas
+    ref="canvasFengShuiCompass"
+    :style="{
+      transform: 'rotate(' + rotate + 'deg)',
+    }"
+  >
     你的浏览器不支持HTML5 Canvas标签
   </canvas>
 </template>
@@ -9,79 +12,79 @@
 <script setup>
 import { FengShuiCompass, CompassData } from "./compass-main.js";
 // import  CompassData  from "./compass-redata.js";
-import { ref, onMounted, watch, onUpdated   } from "vue";
+import { ref, onMounted, watch } from "vue";
 const props = defineProps({
-    width: Number,
-    height: Number,
-    rotate: String,
-    compassData: {
-      type: Object,
-      default: new CompassData().getAllData()
-    },
-    layerFilt: {
-      type: Array,
-      default: []
-    },
-  }) 
+  width: Number,
+  height: Number,
+  rotate: String,
+  compassData: {
+    type: Array,
+    default: new CompassData().getAllData(),
+  },
+  layerFilt: {
+    type: Array,
+    default: [],
+  },
+  latticeFill: {
+    type: Array,
+    default: [],
+  },
+});
 
 const fs = new FengShuiCompass();
 let ctx = null;
-  // components:{FengShuiCompass},
+// components:{FengShuiCompass},
 let canvasFengShuiCompass = ref(null);
-onUpdated(() => {
-      console.log("props:",props)
-    })
-watch(() => props.layerFilt,(newVal)=>{
-  console.log("change!!!")
-  if(ctx != null){
-  fs.setLatticeFill([
-          [1, 3, "red"],
-          [3, 3, "blue"],
-        ]).setLayerFill([[4, "red"]])
-        .setCompassData(props.compassData)
-        .draw(ctx)
-  }
+// onUpdated(() => {
+//       console.log("props-onUpdated:",props)
+//     })
 
-    
-})
-
-    onMounted(() => {
-      console.log(canvasFengShuiCompass.value);
-
-      // var [_lineWidth, _borderWidth, _fontSpace] = [3, 3, 5];
-      // var correctionAngle = -90;
-      var canvas = canvasFengShuiCompass.value;
-      canvas.width = props.width;
-      canvas.height = props.height;
-      ctx = canvas.getContext("2d");
-
-      // console.log("props", props);
-      fs.setCenterPoint(props.width / 2, props.height / 2)
-        .setRadius(props.height / 2)
-        .setLatticeFill([
-          [3, 3, "red"],
-          [4, 3, "aqua"],
-        ])
-        .setLayerFill([[3, "green"]])
+watch(
+  [() => props.layerFilt, () => props.latticeFill],
+  (newVal) => {
+    if (ctx != null) {
+      console.log(canvasFengShuiCompass.value.width, canvasFengShuiCompass.value.height);
+      ctx.clearRect(
+        0,
+        0,
+        canvasFengShuiCompass.value.width,
+        canvasFengShuiCompass.value.height
+      );
+      fs.setLatticeFill(props.latticeFill)
+        .setLayerFill(props.layerFilt)
         .setScaclStyle({
           minLineHeight: 10,
           midLineHeight: 25,
           maxLineHeight: 25,
           numberFontSize: 30,
         })
-        .setCompassData(props.compassData) //必须在配置所有基本数据完成之后执行
-        .draw(ctx); //draw 必须setCompassData完成之后执行 终止链式
+        .setCompassData(props.compassData)
+        .draw(ctx);
+    }
+  },
+  { deep: true }
+);
 
-        // setTimeout(()=>{
-        //   console.log(fs);
-        //   fs.setLatticeFill([
-        //   [1, 3, "red"],
-        //   [3, 3, "blue"],
-        // ]).setLayerFill([[4, "red"]]).setCompassData(props.compassData).draw(ctx)
-        // },5000)
-    });
+onMounted(() => {
 
+  var canvas = canvasFengShuiCompass.value;
+  canvas.width = props.width;
+  canvas.height = props.height;
+  ctx = canvas.getContext("2d");
+
+  fs.setCenterPoint(props.width / 2, props.height / 2)
+    .setRadius(props.height / 2)
+    .setLatticeFill([])
+    .setLayerFill([])
+    .setScaclStyle({
+      minLineHeight: 10,
+      midLineHeight: 25,
+      maxLineHeight: 25,
+      numberFontSize: 30,
+    })
+    .setCompassData(props.compassData) //必须在配置所有基本数据完成之后执行
+    .draw(ctx); //draw 必须setCompassData完成之后执行 终止链式
+});
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

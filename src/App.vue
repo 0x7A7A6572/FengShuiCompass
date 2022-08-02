@@ -2,33 +2,67 @@
 import FengShuiCompass from "./components/FengShuiCompass.vue";
 import { CompassData } from "./components/compass-main.js";
 
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 let compassDataObj = new CompassData();
+
 let rotate = ref(0);
 let selectLayer = ref("0");
 let selectLayerColor = ref("#ff0000");
 let selectLattice = ref("");
+let selectLatticeColor = ref("#00ff00");
 let compassData = ref(compassDataObj.getAllData());
-
+console.log(compassDataObj.getAllData(), compassData.value)
 let layerFilt = ref([]);
+let latticeFill = ref([]);
 
-function getDataByIndex(){
- return compassDataObj.getDataByIndex(selectLayer.value)
+function getDataByIndex() {
+  return compassDataObj.getDataByIndex(selectLayer.value);
 }
 
-function changeLayerFilt(){
+function changeLayerFilt() {
   let count = 0;
-  for(let i in layerFilt.value){
-     console.log("??",layerFilt.value, layerFilt.value[i][0] == selectLayer.value)
-    if(layerFilt.value[i][0] == selectLayer.value){
-      layerFilt.value[i][1].value = selectLayerColor.value;
+  // console.log("selectLayerColor:", typeof selectLayerColor.value);
+  if (layerFilt.value.length == 0) {
+    layerFilt.value.push([parseInt(selectLayer.value), selectLayerColor.value]);
+  }
+  for (let i in layerFilt.value) {
+    if (layerFilt.value[i][0] == selectLayer.value) {
+      layerFilt.value[i][1] = selectLayerColor.value;
       break;
-    }else if(count == layerFilt.value.length){
-      layerFilt.value.push([selectLayer.value, selectLayerColor.value]);
+    } else if (count == layerFilt.value.length - 1) {
+      layerFilt.value.push([parseInt(selectLayer.value), selectLayerColor.value]);
     }
     count++;
   }
-  console.log("LayerFilt.value",layerFilt.value,count);
+  // console.log("LayerFilt.value", layerFilt.value, count);
+}
+
+function changeLatticeFill() {
+  let count = 0;
+  // console.log("selectLayerColor:", typeof selectLayerColor.value);
+  if (latticeFill.value.length == 0) {
+    latticeFill.value.push([
+      parseInt(selectLattice.value),
+      parseInt(selectLayer.value),
+      selectLatticeColor.value,
+    ]);
+  }
+  for (let i in latticeFill.value) {
+    if (
+      latticeFill.value[i][1] == selectLayer.value &&
+      latticeFill.value[i][0] == selectLattice.value
+    ) {
+      latticeFill.value[i][2] = selectLatticeColor.value;
+      break;
+    } else if (count == latticeFill.value.length - 1) {
+      latticeFill.value.push([
+        parseInt(selectLattice.value),
+        parseInt(selectLayer.value),
+        selectLatticeColor.value,
+      ]);
+    }
+    count++;
+  }
 }
 
 </script>
@@ -42,6 +76,7 @@ function changeLayerFilt(){
       v-model:rotate="rotate"
       :compassData="compassData"
       v-model:layerFilt="layerFilt"
+      v-model:latticeFill="latticeFill"
     ></FengShuiCompass>
     <div class="contorl">
       <div class="control-rotate">
@@ -55,24 +90,28 @@ function changeLayerFilt(){
         <div>
           层：
           <select v-model="selectLayer">
-            <option v-for="(item,index) in compassDataObj.getAllData()" :key="index">{{index}}</option>
+            <option v-for="(item, index) in compassDataObj.getAllData()" :key="index">
+              {{ index }}
+            </option>
           </select>
-          <input type="color"  @input="changeLayerFilt"/>
+          <input type="color" v-model="selectLayerColor" @change="changeLayerFilt" />
           <!-- <div>{{item}}</div> -->
         </div>
         <div>
           宫：
-           <select v-model="selectLattice">
-            <option v-for="(item,index) in getDataByIndex()" :key="index">{{item}}</option>
+          <select v-model="selectLattice">
+            <option v-for="(item, index) in getDataByIndex()" :key="index">
+              {{ index }}
+            </option>
           </select>
-          <input type="color" value="#FF9900" />
+          <input type="color" v-model="selectLatticeColor" @change="changeLatticeFill" />
         </div>
       </div>
       <div class="line"></div>
 
       <div class="control-data">
         数据
-        <textarea disabled type="range" min="0" max="100" step="5"></textarea>
+        <textarea disabled type="range" min="0" max="100" step="5" :value="JSON.stringify(compassData)"></textarea>
       </div>
       <div class="line"></div>
     </div>
@@ -94,6 +133,7 @@ body {
 }
 .gemc-layout {
   display: flex;
+  overflow: hidden;
 }
 .contorl {
   background-color: rgb(35, 35, 35);
@@ -113,6 +153,7 @@ body {
   color: aqua;
   text-align: left;
   font-size: smaller;
+  min-height: 50vh;
 }
 .control-data textarea {
   font-size: small;
@@ -136,5 +177,11 @@ select {
   background-color: transparent;
   margin-left: 5px;
   color: aqua;
+}
+textarea{
+  background-color: #2c3e50;
+  color: aqua;
+  height: max-content;
+  min-height: inherit;
 }
 </style>
