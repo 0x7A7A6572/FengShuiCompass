@@ -145,11 +145,11 @@ class FengShuiCompass {
     /** 刻度高度 */
     scaleHeight: 40 + 3 + 5,/** 3 = borderWidth， 5 = _LayerPadding  暂时不支持修改刻度样式*/
     /** 天心十字 */
-    tianXinCross: {
-      show: false,
-      borderWidth: 3,
-      bordeeColor: 'aqua'
-    },
+    // tianXinCross: {
+    //   show: false,
+    //   borderWidth: 3,
+    //   bordeeColor: 'aqua'
+    // },
     tianChiRadiu: 100,
     data: []
   };
@@ -215,12 +215,12 @@ class FengShuiCompass {
    *  设置天下心十字 
    * （天心十字需要固定 暂时不使用）
    *  */
-  setTianXinCorss(show, width, color) {
-    this.COMPASS.tianXinCross.show = typeof (show) == "boolean" ? show : true;
-    this.COMPASS.tianXinCross.borderWidth = typeof (width) == "number" ? width : 3;
-    this.COMPASS.tianXinCross.borderColor = typeof (color) == "string" ? color : 'red';
-    return this;
-  }
+  // setTianXinCorss(show, width, color) {
+  //   this.COMPASS.tianXinCross.show = typeof (show) == "boolean" ? show : true;
+  //   this.COMPASS.tianXinCross.borderWidth = typeof (width) == "number" ? width : 3;
+  //   this.COMPASS.tianXinCross.borderColor = typeof (color) == "string" ? color : 'red';
+  //   return this;
+  // }
 
   /* setCompassData其他set之后调用 */
   setCompassData(cdata) {
@@ -555,14 +555,14 @@ layerHight = this._caclVertical(textVertical, layerTextLentgh, layerFonSize);
 
 
   /**
-   * 
-   * @param {*} s xy坐标 r半径
-   * @param {*} startAngle 起始角度
-   * @param {*} startX 开始画的x
-   * @param {*} startY 开始画的y
-   * @param {*} endX 结束画的x
-   * @param {*} endY 结束画的y
-   * @param {*} color 颜色
+   *  画圆圈
+   * @param {{x:number,y:number}} s xy坐标 r半径
+   * @param {number} startAngle 起始角度
+   * @param {number} startX 开始画的x
+   * @param {number} startY 开始画的y
+   * @param {number} endX 结束画的x
+   * @param {number} endY 结束画的y
+   * @param {string} color 颜色
    */
   _drawCircularLine(s, startAngle, startX, startY, endX, endY, color) {
     color = color != null ? color : this.ObjCompass._getBorderColor();
