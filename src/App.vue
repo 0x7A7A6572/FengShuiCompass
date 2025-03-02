@@ -1,11 +1,18 @@
 <script setup>
 import FengShuiCompass from "./components/FengShuiCompass.vue";
+import FengShuiCompassSvg from "./components/fs-compass-svg/FengShuiCompassSvg.vue";
 import { CompassData } from "./components/compass-main.js";
+import StarryBackground from "./components/StarryBackground.vue";
 
 import { ref, reactive } from "vue";
 let compassDataObj = new CompassData();
 //旋转角度
 let rotate = ref(0);
+//罗盘大小
+let compassSize = ref({
+  width: 800,
+  height: 800,
+});
 //选择的层数
 let selectLayer = ref("0");
 //选择层的填充色
@@ -26,14 +33,18 @@ let scaclStyle = ref({
   minLineHeight: 10,
   midLineHeight: 25,
   maxLineHeight: 25,
-  numberFontSize: 30,
+  // numberFontSize: 20,
 });
-
-//显示隐藏天心十字
-let isShowTianxinCross = ref(true);
-
+let isPanelExpanded = ref(true);
 function getDataByIndex() {
   return compassDataObj.getDataByIndex(selectLayer.value);
+}
+
+function handleLatticeClick(event) {
+  console.log("宫格被点击：", event);
+  // 设置选中的层和宫
+  selectLayer.value = event.layerIndex.toString();
+  selectLattice.value = event.latticeIndex.toString();
 }
 
 function changeLayerFilt() {
@@ -47,7 +58,10 @@ function changeLayerFilt() {
       layerFilt.value[i][1] = selectLayerColor.value;
       break;
     } else if (count == layerFilt.value.length - 1) {
-      layerFilt.value.push([parseInt(selectLayer.value), selectLayerColor.value]);
+      layerFilt.value.push([
+        parseInt(selectLayer.value),
+        selectLayerColor.value,
+      ]);
     }
     count++;
   }
@@ -81,74 +95,120 @@ function changeLatticeFill() {
     count++;
   }
 }
-
 </script>
 
 <template>
+  <StarryBackground />
   <div class="gemc-layout">
-    <FengShuiCompass
-      id="gemc"
-      :width="2000"
-      :height="2000"
-      v-model:rotate="rotate"
-      :compassData="compassData"
-      v-model:layerFilt="layerFilt"
-      v-model:latticeFill="latticeFill"
-      :scaclStyle="scaclStyle"
-      :isShowTianxinCross="isShowTianxinCross"
-      :tianxinCrossStyle="{ color: 'red', lineWidth: 10 }"
-    ></FengShuiCompass>
-    <div class="contorl">
-      <div class="control-rotate">
-        旋转罗盘
-        <input type="range" min="0" max="100" step="" v-model="rotate" />
-      </div>
-      <div class="line"></div>
+    <!-- <div class="compass-container">
+      <h3 class="compass-title">Canvas版本</h3>
+      <FengShuiCompass
+        id="gemc"
+        :width="1000"
+        :height="1000"
+        v-model:rotate="rotate"
+        :compassData="compassData"
+        v-model:layerFilt="layerFilt"
+        v-model:latticeFill="latticeFill"
+        :scaclStyle="scaclStyle"
+        :isShowTianxinCross="isShowTianxinCross"
+        :tianxinCrossStyle="{ color: 'red', lineWidth: 10 }"
+      ></FengShuiCompass>
+    </div> -->
+    <div class="compass-container">
+      <h3 class="compass-title">SVG版本</h3>
+      <FengShuiCompassSvg
+        :width="compassSize.width"
+        :height="compassSize.height"
+        :rotate="rotate"
+        :compassData="compassData"
+        :layerFilt="layerFilt"
+        :latticeFill="latticeFill"
+        borderColor="#DDDDDD"
+        scaleColor="#DDDDDD"
+        scaleHighlightColor="#DDDDDD"
+        :scaclStyle="scaclStyle"
+        @latticeClick="handleLatticeClick"
+      ></FengShuiCompassSvg>
+    </div>
 
-      <div class="control-rotate">
-        颜色填充
-        <div>
-          层：
-          <select v-model="selectLayer">
-            <option v-for="(item, index) in compassDataObj.getAllData()" :key="index">
-              {{ index }}
-            </option>
-          </select>
-          <input type="color" v-model="selectLayerColor" @change="changeLayerFilt" />
-          <!-- <div>{{item}}</div> -->
+    <div class="contorl" :class="{ collapsed: !isPanelExpanded }">
+      <button class="toggle-panel" @click="isPanelExpanded = !isPanelExpanded">
+        <span class="toggle-icon">{{ isPanelExpanded ? "→" : "←" }}</span>
+      </button>
+      <div>
+        <div class="line"></div>
+        <div class="control-rotate">
+          旋转罗盘
+          <input type="range" min="0" max="100" step="" v-model="rotate" />
         </div>
-        <div>
-          宫：
-          <select v-model="selectLattice">
-            <option v-for="(item, index) in getDataByIndex()" :key="index">
-              {{ index }}
-            </option>
-          </select>
-          <input type="color" v-model="selectLatticeColor" @change="changeLatticeFill" />
+        <div class="line"></div>
+        <div class="control-rotate">
+          罗盘大小
+          <div>
+            宽度：<input type="range" min="200" max="1200" step="50" v-model="compassSize.width" /> {{ compassSize.width }}px
+          </div>
+          <div>
+            高度：<input type="range" min="200" max="1200" step="50" v-model="compassSize.height" /> {{ compassSize.height }}px
+          </div>
         </div>
-     <div class="line"></div>
-        <div>
-          隐藏/显示天心十字:
-          <label class="switch">
-            <input type="checkbox" v-model="isShowTianxinCross"/>
-            <div class="slider"></div>
-          </label>
+        <div class="line"></div>
+        <div class="control-rotate">
+          颜色填充
+          <div>
+            层：
+            <select v-model="selectLayer">
+              <option
+                v-for="(item, index) in compassDataObj.getAllData()"
+                :key="index"
+              >
+                {{ index }}
+              </option>
+            </select>
+            <input
+              type="color"
+              v-model="selectLayerColor"
+              @change="changeLayerFilt"
+            />
+            <!-- <div>{{item}}</div> -->
+          </div>
+          <div>
+            宫：
+            <select v-model="selectLattice">
+              <option v-for="(item, index) in getDataByIndex()" :key="index">
+                {{ index }}
+              </option>
+            </select>
+            <input
+              type="color"
+              v-model="selectLatticeColor"
+              @change="changeLatticeFill"
+            />
+          </div>
+          <div class="line"></div>
+          <div>
+            隐藏/显示天心十字:
+            <label class="switch">
+              <input type="checkbox" v-model="isShowTianxinCross" />
+              <div class="slider"></div>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <div class="line"></div>
-      <div class="control-data">
-        数据
-        <textarea
-          disabled
-          type="range"
-          min="0"
-          max="100"
-          step="5"
-          :value="JSON.stringify(compassData)"
-        ></textarea>
+        <div class="line"></div>
+        <div class="control-data">
+          数据
+          <textarea
+            disabled
+            type="range"
+            min="0"
+            max="100"
+            step="5"
+            :value="JSON.stringify(compassData)"
+          ></textarea>
+        </div>
+        <div class="line"></div>
       </div>
-      <div class="line"></div>
     </div>
   </div>
 </template>
@@ -164,7 +224,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background: rgb(46, 47, 46);
+  background: rgb(12, 12, 12);
 }
 .gemc-layout {
   display: flex;
@@ -172,10 +232,54 @@ body {
   width: 100vw;
   height: 100vh;
 }
+.compass-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+.compass-title {
+  color: aqua;
+  margin-bottom: 20px;
+}
 .contorl {
   background-color: rgb(35, 35, 35);
-  flex: auto;
   padding: 10px;
+  width: 400px;
+  height: 100%;
+  position: fixed;
+  right: 0;
+  transition: transform 0.3s ease;
+}
+
+.contorl.collapsed {
+  transform: translateX(400px);
+}
+
+.toggle-panel {
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 60px;
+  background-color: rgb(35, 35, 35);
+  border: none;
+  color: aqua;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.toggle-panel:hover {
+  background-color: rgb(45, 45, 45);
+}
+
+.toggle-icon {
+  display: inline-block;
 }
 .control-rotate > div {
   margin-top: 5px;
