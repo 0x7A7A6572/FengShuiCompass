@@ -2,8 +2,12 @@
 import FengShuiCompass from "./components/FengShuiCompass.vue";
 import FengShuiCompassSvg from "./components/fs-compass-svg/FengShuiCompassSvg.vue";
 import { CompassData } from "./components/compass-main.js";
+import StarryBackground from "./components/StarryBackground.vue";
+import ControlPanel from "./components/ControlPanel.vue";
+import { ElDialog, ElForm, ElFormItem, ElInput, ElButton } from "element-plus";
+import "element-plus/dist/index.css";
 
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 let compassDataObj = new CompassData();
 //旋转角度
 let rotate = ref(0);
@@ -12,17 +16,8 @@ let compassSize = ref({
   width: 800,
   height: 800,
 });
-//选择的层数
-let selectLayer = ref("0");
-//选择层的填充色
-let selectLayerColor = ref("#ff0000");
-//选择的宫
-let selectLattice = ref("");
-//选择宫的填充色
-let selectLatticeColor = ref("#00ff00");
 //所有层的罗盘数据
 let compassData = ref(compassDataObj.getAllData());
-// console.log(compassDataObj.getAllData(), compassData.value)
 //存储层的填充数据
 let layerFilt = ref([]);
 //存储宫的填充数据
@@ -32,88 +27,33 @@ let scaclStyle = ref({
   minLineHeight: 10,
   midLineHeight: 25,
   maxLineHeight: 25,
-  // numberFontSize: 20,
 });
-let isPanelExpanded = ref(true);
-function getDataByIndex() {
-  return compassDataObj.getDataByIndex(selectLayer.value);
-}
+let isShowTianxinCross = ref(true);
 
+// 罗盘边框颜色
+let borderColor = ref('#DDDDDD');
+// 刻度颜色
+let scaleColor = ref('#DDDDDD');
+// 高亮刻度颜色
+let scaleHighlightColor = ref('#DDDDDD');
+const refControlPanel = ref(null);
 function handleLatticeClick(event) {
   console.log("宫格被点击：", event);
-  // 这里可以根据需要处理宫格点击事件
-  // event包含：latticeIndex（宫格索引）、layerIndex（层索引）和data（宫格数据）
+  // 设置选中的层和宫
+  refControlPanel.value.updateLayerLatticeIndex(event);
 }
 
-function changeLayerFilt() {
-  let count = 0;
-  // console.log("selectLayerColor:", typeof selectLayerColor.value);
-  if (layerFilt.value.length == 0) {
-    layerFilt.value.push([parseInt(selectLayer.value), selectLayerColor.value]);
-  }
-  for (let i in layerFilt.value) {
-    if (layerFilt.value[i][0] == selectLayer.value) {
-      layerFilt.value[i][1] = selectLayerColor.value;
-      break;
-    } else if (count == layerFilt.value.length - 1) {
-      layerFilt.value.push([
-        parseInt(selectLayer.value),
-        selectLayerColor.value,
-      ]);
-    }
-    count++;
-  }
-  // console.log("LayerFilt.value", layerFilt.value, count);
-}
-
-function changeLatticeFill() {
-  let count = 0;
-  // console.log("selectLayerColor:", typeof selectLayerColor.value);
-  if (latticeFill.value.length == 0) {
-    latticeFill.value.push([
-      parseInt(selectLattice.value),
-      parseInt(selectLayer.value),
-      selectLatticeColor.value,
-    ]);
-  }
-  for (let i in latticeFill.value) {
-    if (
-      latticeFill.value[i][1] == selectLayer.value &&
-      latticeFill.value[i][0] == selectLattice.value
-    ) {
-      latticeFill.value[i][2] = selectLatticeColor.value;
-      break;
-    } else if (count == latticeFill.value.length - 1) {
-      latticeFill.value.push([
-        parseInt(selectLattice.value),
-        parseInt(selectLayer.value),
-        selectLatticeColor.value,
-      ]);
-    }
-    count++;
-  }
+// 处理罗盘数据更新
+function handleCompassDataUpdate(newData) {
+  compassData.value = newData;
 }
 </script>
 
 <template>
+  <StarryBackground />
   <div class="gemc-layout">
-    <!-- <div class="compass-container">
-      <h3 class="compass-title">Canvas版本</h3>
-      <FengShuiCompass
-        id="gemc"
-        :width="1000"
-        :height="1000"
-        v-model:rotate="rotate"
-        :compassData="compassData"
-        v-model:layerFilt="layerFilt"
-        v-model:latticeFill="latticeFill"
-        :scaclStyle="scaclStyle"
-        :isShowTianxinCross="isShowTianxinCross"
-        :tianxinCrossStyle="{ color: 'red', lineWidth: 10 }"
-      ></FengShuiCompass>
-    </div> -->
     <div class="compass-container">
-      <h3 class="compass-title">SVG版本</h3>
+      <h3 class="compass-title">SVG-FengShuiCompass</h3>
       <FengShuiCompassSvg
         :width="compassSize.width"
         :height="compassSize.height"
@@ -121,89 +61,27 @@ function changeLatticeFill() {
         :compassData="compassData"
         :layerFilt="layerFilt"
         :latticeFill="latticeFill"
+        :isShowTianxinCross="isShowTianxinCross"
+        v-model:borderColor="borderColor"
+        v-model:scaleColor="scaleColor"
+        v-model:scaleHighlightColor="scaleHighlightColor"
         :scaclStyle="scaclStyle"
         @latticeClick="handleLatticeClick"
       ></FengShuiCompassSvg>
     </div>
-
-    <div class="contorl" :class="{ collapsed: !isPanelExpanded }">
-      <button class="toggle-panel" @click="isPanelExpanded = !isPanelExpanded">
-        <span class="toggle-icon">{{ isPanelExpanded ? "→" : "←" }}</span>
-      </button>
-      <div>
-        <div class="line"></div>
-        <div class="control-rotate">
-          旋转罗盘
-          <input type="range" min="0" max="100" step="" v-model="rotate" />
-        </div>
-        <div class="line"></div>
-        <div class="control-rotate">
-          罗盘大小
-          <div>
-            宽度：<input type="range" min="200" max="1200" step="50" v-model="compassSize.width" /> {{ compassSize.width }}px
-          </div>
-          <div>
-            高度：<input type="range" min="200" max="1200" step="50" v-model="compassSize.height" /> {{ compassSize.height }}px
-          </div>
-        </div>
-        <div class="line"></div>
-        <div class="control-rotate">
-          颜色填充
-          <div>
-            层：
-            <select v-model="selectLayer">
-              <option
-                v-for="(item, index) in compassDataObj.getAllData()"
-                :key="index"
-              >
-                {{ index }}
-              </option>
-            </select>
-            <input
-              type="color"
-              v-model="selectLayerColor"
-              @change="changeLayerFilt"
-            />
-            <!-- <div>{{item}}</div> -->
-          </div>
-          <div>
-            宫：
-            <select v-model="selectLattice">
-              <option v-for="(item, index) in getDataByIndex()" :key="index">
-                {{ index }}
-              </option>
-            </select>
-            <input
-              type="color"
-              v-model="selectLatticeColor"
-              @change="changeLatticeFill"
-            />
-          </div>
-          <div class="line"></div>
-          <div>
-            隐藏/显示天心十字:
-            <label class="switch">
-              <input type="checkbox" v-model="isShowTianxinCross" />
-              <div class="slider"></div>
-            </label>
-          </div>
-        </div>
-
-        <div class="line"></div>
-        <div class="control-data">
-          数据
-          <textarea
-            disabled
-            type="range"
-            min="0"
-            max="100"
-            step="5"
-            :value="JSON.stringify(compassData)"
-          ></textarea>
-        </div>
-        <div class="line"></div>
-      </div>
-    </div>
+    <ControlPanel
+      ref="refControlPanel"
+      :compassData="compassData"
+      v-model:rotate="rotate"
+      v-model:layerFilt="layerFilt"
+      v-model:latticeFill="latticeFill"
+      v-model:compassSize="compassSize"
+      v-model:isShowTianxinCross="isShowTianxinCross"
+      v-model:borderColor="borderColor"
+      v-model:scaleColor="scaleColor"
+      v-model:scaleHighlightColor="scaleHighlightColor"
+      @update:compassData="handleCompassDataUpdate"
+    />
   </div>
 </template>
 
@@ -218,7 +96,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background: rgb(46, 47, 46);
+  background: rgb(12, 12, 12);
 }
 .gemc-layout {
   display: flex;
@@ -234,7 +112,7 @@ body {
   padding: 20px;
 }
 .compass-title {
-  color: aqua;
+  color: #dddddd;
   margin-bottom: 20px;
 }
 .contorl {
@@ -248,24 +126,27 @@ body {
 }
 
 .contorl.collapsed {
-  transform: translateX(400px);
+  transform: translateX(410px);
 }
 
 .toggle-panel {
   position: absolute;
   left: -30px;
-  top: 50%;
+  top: 5%;
   transform: translateY(-50%);
   width: 30px;
   height: 60px;
   background-color: rgb(35, 35, 35);
   border: none;
-  color: aqua;
+  color: #dddddd;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  border-radius: 5px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .toggle-panel:hover {
@@ -279,13 +160,13 @@ body {
   margin-top: 5px;
 }
 .control-rotate {
-  color: aqua;
+  color: #dddddd;
   text-align: left;
   font-size: smaller;
 }
 
 .control-data {
-  color: aqua;
+  color: #dddddd;
   text-align: left;
   font-size: smaller;
   min-height: 50vh;
@@ -294,7 +175,7 @@ body {
   font-size: small;
   width: 100%;
   background-color: #2c3e50;
-  color: aqua;
+  color: #dddddd;
   height: max-content;
   min-height: inherit;
 }
@@ -305,7 +186,7 @@ body {
   margin: 50px;
 }
 .line {
-  background-color: aqua;
+  background-color: #dddddd;
   height: 1px;
   margin: 5px 0px;
   width: 100%;
@@ -317,7 +198,7 @@ input,
 select {
   background-color: transparent;
   margin-left: 5px;
-  color: aqua;
+  color: #dddddd;
 }
 
 /** 开关按钮样式 */
@@ -357,16 +238,21 @@ select {
 }
 
 input:checked + .slider {
-  background-color: aqua;
+  background-color: #dddddd;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px aqua;
+  box-shadow: 0 0 1px #dddddd;
 }
 
 input:checked + .slider:before {
   -webkit-transform: translateX(20px);
   -ms-transform: translateX(20px);
   transform: translateX(20px);
+}
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 </style>

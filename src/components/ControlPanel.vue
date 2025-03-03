@@ -1,57 +1,55 @@
 <template>
   <div class="control" :class="{ collapsed: !isPanelExpanded }">
-    <el-button 
-      class="toggle-panel" 
+    <el-button
+      class="toggle-panel"
       @click="isPanelExpanded = !isPanelExpanded"
       :icon="isPanelExpanded ? 'ArrowRight' : 'ArrowLeft'"
-      circle
     />
-    <el-space direction="vertical" fill class="control-content">
-      <el-divider />
+    <div direction="vertical" fill class="control-content">
       <div class="control-section">
-        <el-text>旋转罗盘</el-text>
-        <el-slider
-          v-model="rotate"
-          :min="0"
-          :max="100"
-          @input="$emit('update:rotate', rotate)"
-        />
+        <el-text class="sub-title">旋转罗盘</el-text>
+        <div class="flex-center">
+          <el-text>角度：</el-text>
+          <el-slider
+            v-model="rotate"
+            :min="0"
+            :max="360"
+            :step="1"
+            @input="$emit('update:rotate', rotate)"
+          />
+        </div>
       </div>
-      <el-divider />
       <div class="control-section">
-        <el-text>罗盘大小</el-text>
-        <div>
+        <el-text class="sub-title">罗盘大小</el-text>
+        <div class="flex-center">
           <el-text>宽度：</el-text>
           <el-slider
             v-model="compassSize.width"
-            :min="200"
-            :max="1200"
-            :step="50"
+            :min="400"
+            :max="1600"
+            :step="100"
+            show-stops
             @input="updateCompassSize"
           >
-            <template #marker>
-              {{ compassSize.width }}px
-            </template>
+            <template #marker> {{ compassSize.width }}px </template>
           </el-slider>
         </div>
-        <div>
+        <div class="flex-center">
           <el-text>高度：</el-text>
           <el-slider
             v-model="compassSize.height"
-            :min="200"
-            :max="1200"
-            :step="50"
+            :min="400"
+            :max="1600"
+            :step="100"
+            show-stops
             @input="updateCompassSize"
           >
-            <template #marker>
-              {{ compassSize.height }}px
-            </template>
+            <template #marker> {{ compassSize.height }}px </template>
           </el-slider>
         </div>
       </div>
-      <el-divider />
       <div class="control-section">
-        <el-text>颜色填充</el-text>
+        <el-text class="sub-title">样式修改</el-text>
         <div class="color-select">
           <el-text>层：</el-text>
           <el-select v-model="selectLayer" size="small">
@@ -84,41 +82,113 @@
             size="small"
           />
         </div>
-        <el-divider />
+        <div class="color-select">
+          <el-text>文字颜色：</el-text>
+          <el-color-picker
+            v-model="selectLatticeTextColor"
+            @change="changeLatticeTextColorFill"
+            size="small"
+          />
+        </div>
+      </div>
+      <div class="control-section">
+        <el-text class="sub-title">罗盘边框与刻度</el-text>
+        <div class="color-select">
+          <el-text>边框颜色：</el-text>
+          <el-color-picker
+            v-model="borderColor"
+            @change="$emit('update:borderColor', borderColor)"
+            size="small"
+          />
+        </div>
+        <div class="color-select">
+          <el-text>刻度颜色：</el-text>
+          <el-color-picker
+            v-model="scaleColor"
+            @change="$emit('update:scaleColor', scaleColor)"
+            size="small"
+          />
+        </div>
+        <div class="color-select">
+          <el-text>高亮刻度颜色：</el-text>
+          <el-color-picker
+            v-model="scaleHighlightColor"
+            @change="$emit('update:scaleHighlightColor', scaleHighlightColor)"
+            size="small"
+          />
+        </div>
+      </div>
+      <div class="control-section">
+        <el-text class="sub-title">天心十字</el-text>
         <div class="switch-item">
-          <el-text>隐藏/显示天心十字：</el-text>
+          <el-text>显示/隐藏：</el-text>
           <el-switch
             v-model="isShowTianxinCross"
             @change="$emit('update:isShowTianxinCross', isShowTianxinCross)"
           />
         </div>
       </div>
-      <el-divider />
       <div class="control-section">
-        <el-text>罗盘渲染数据</el-text>
+        <el-text class="sub-title">罗盘渲染数据</el-text>
+        <div class="flex-center" style="justify-content: end">
+          <el-button @click="showFullscreenEditor = true" type="primary">
+            <el-icon><FullScreen /></el-icon>
+          </el-button>
+          <el-button type="primary" @click="updateCompassData">更新</el-button>
+        </div>
+
         <v-ace-editor
           v-model:value="editorContent"
           lang="json"
           theme="monokai"
-          style="height: 60vh"
+          style="height: 30vh"
           :options="{
             fontSize: 14,
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
+            enableBasicAutocompletion: false,
+            enableLiveAutocompletion: false,
             showPrintMargin: false,
           }"
         />
-        <el-button type="primary" @click="updateCompassData" style="margin-top: 10px">确认</el-button>
       </div>
       <el-divider />
-    </el-space>
+    </div>
   </div>
+  <el-dialog
+    style="background: #272822; color: whit"
+    v-model="showFullscreenEditor"
+    title="罗盘数据编辑器"
+    fullscreen
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+  >
+    <v-ace-editor
+      v-model:value="editorContent"
+      lang="json"
+      theme="monokai"
+      style="height: calc(100vh - 150px)"
+      :options="{
+        fontSize: 14,
+        enableBasicAutocompletion: false,
+        enableLiveAutocompletion: false,
+        showPrintMargin: false,
+      }"
+    />
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="showFullscreenEditor = false">取消</el-button>
+        <el-button type="primary" @click="handleFullscreenUpdate">
+          确认
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { VAceEditor } from "vue3-ace-editor";
-import { ArrowRight, ArrowLeft } from '@element-plus/icons-vue';
+import { ArrowRight, ArrowLeft } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
 
@@ -147,21 +217,44 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  borderColor: {
+    type: String,
+    default: '#DDDDDD',
+  },
+  scaleColor: {
+    type: String,
+    default: '#DDDDDD',
+  },
+  scaleHighlightColor: {
+    type: String,
+    default: '#DDDDDD',
+  },
 });
 
 const emit = defineEmits([
-  "update:rotate",
-  "update:compassSize",
-  "update:layerFilt",
-  "update:latticeFill",
-  "update:isShowTianxinCross",
+  'update:rotate',
+  'update:compassSize',
+  'update:layerFilt',
+  'update:latticeFill',
+  'update:isShowTianxinCross',
+  'update:borderColor',
+  'update:scaleColor',
+  'update:scaleHighlightColor',
 ]);
 
+// 注册图标组件
+const components = {
+  ArrowRight,
+  ArrowLeft,
+};
+
+const showFullscreenEditor = ref(false);
 const isPanelExpanded = ref(true);
 const selectLayer = ref(0);
 const selectLayerColor = ref("#ff0000");
 const selectLattice = ref("");
 const selectLatticeColor = ref("#00ff00");
+const selectLatticeTextColor = ref("#ffffff");
 const showEditor = ref(true);
 const editorContent = ref(JSON.stringify(props.compassData, null, 2));
 
@@ -209,6 +302,28 @@ function changeLatticeFill() {
   emit("update:latticeFill", newLatticeFill);
 }
 
+function changeLatticeTextColorFill() {
+  const newLatticeFill = [...props.latticeFill];
+  const latticeIndex = parseInt(selectLattice.value);
+  const layerIndex = parseInt(selectLayer.value);
+  const existingIndex = newLatticeFill.findIndex(
+    (item) => item[0] === latticeIndex && item[1] === layerIndex
+  );
+
+  if (existingIndex === -1) {
+    newLatticeFill.push([latticeIndex, layerIndex, undefined, selectLatticeTextColor.value]);
+  } else {
+    newLatticeFill[existingIndex][3] = selectLatticeTextColor.value;
+  }
+
+  // 更新数据源中对应宫格的textColor属性
+  if (props.compassData[layerIndex] && props.compassData[layerIndex].data[latticeIndex]) {
+    props.compassData[layerIndex].textColor = selectLatticeTextColor.value;
+  }
+
+  emit("update:latticeFill", newLatticeFill);
+}
+
 function updateLayerLatticeIndex(event) {
   selectLayer.value = event.layerIndex;
   selectLattice.value = event.latticeIndex;
@@ -222,11 +337,32 @@ function openEditor() {
 function updateCompassData() {
   try {
     const newData = JSON.parse(editorContent.value);
+    // 验证数据结构
+    if (!Array.isArray(newData)) {
+      ElMessage.error("数据格式错误：必须是一个数组");
+      return;
+    }
+    // 验证每个层的数据结构
+    const isValid = newData.every((layer, index) => {
+      if (!layer.data || !Array.isArray(layer.data)) {
+        ElMessage.error(`第${index + 1}层数据格式错误：缺少data数组`);
+        return false;
+      }
+      return true;
+    });
+
+    if (!isValid) return;
+
     emit("update:compassData", newData);
-    showEditor.value = false;
+    ElMessage.success("罗盘数据更新成功");
   } catch (e) {
-    alert("JSON格式错误，请检查后重试");
+    ElMessage.error("JSON解析错误：" + e.message);
   }
+}
+
+function handleFullscreenUpdate() {
+  updateCompassData();
+  showFullscreenEditor.value = false;
 }
 
 defineExpose({
@@ -236,23 +372,25 @@ defineExpose({
 
 <style scoped>
 .control {
-  background-color: var(--el-bg-color);
+  margin-left: -6px;
+  /* background-color: rgb(0, 0, 0); */
+  background: #232323;
+  color: white;
   padding: 20px;
   width: 400px;
   height: 100%;
   position: fixed;
   right: 0;
   transition: transform 0.3s ease;
-  border-left: 1px solid var(--el-border-color-light);
 }
 
 .control.collapsed {
-  transform: translateX(410px);
+  transform: translateX(440px);
 }
 
 .toggle-panel {
   position: absolute;
-  left: -40px;
+  left: -30px;
   top: 5%;
   transform: translateY(-50%);
 }
@@ -260,6 +398,8 @@ defineExpose({
 .control-content {
   height: 100%;
   overflow-y: auto;
+  /* 隐藏滑动条 */
+  scrollbar-width: none;
 }
 
 .control-section {
@@ -286,11 +426,91 @@ defineExpose({
   margin-top: 8px;
 }
 
+:deep(.el-slider .el-slider__runway) {
+  background-color: #4a4a4a;
+}
+
+:deep(.el-slider .el-slider__bar) {
+  background-color: #909399;
+}
+
+:deep(.el-slider .el-slider__button) {
+  border-color: #909399;
+  background-color: #909399;
+}
+
 :deep(.el-select) {
   width: 100px;
 }
 
+:deep(.el-select .el-input__wrapper) {
+  background-color: #4a4a4a;
+  box-shadow: 0 0 0 1px #606266 inset;
+}
+
+:deep(.el-select .el-input__inner) {
+  color: #dcdfe6;
+}
+
+:deep(.el-color-picker__trigger) {
+  border-color: #606266;
+}
+
 :deep(.el-space) {
   width: 100%;
+}
+
+:deep(.el-button) {
+  background-color: #4a4a4a;
+  border-color: #606266;
+  color: #dcdfe6;
+  margin-bottom: 12px;
+  display: block;
+}
+.sub-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #d1d1d1;
+  margin-bottom: 12px;
+  display: block;
+  text-align: left;
+}
+.sub-title::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 5px;
+  background-color: #2c4d57;
+  margin-top: 10px;
+}
+
+:deep(.el-button:hover) {
+  background-color: #595959;
+  border-color: #707070;
+}
+
+:deep(.el-switch__core) {
+  background-color: #4a4a4a;
+  border-color: #606266;
+}
+
+:deep(.el-switch.is-checked .el-switch__core) {
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+:deep(.el-button.toggle-panel) {
+  background-color: #232323;
+  border: none;
+}
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+.dialog-footer {
+  padding: 20px 0;
+  text-align: right;
 }
 </style>

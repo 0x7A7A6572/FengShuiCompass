@@ -1,15 +1,7 @@
 <template>
-  <div
-    class="feng-shui-compass-svg"
-    :style="{ width: width + 'px', height: height + 'px' }"
-  >
+  <div class="feng-shui-compass-svg" :style="{ width: width + 'px', height: height + 'px' }">
     <!-- 罗盘主体 -->
-    <svg
-      :width="width"
-      :height="height"
-      :viewBox="`0 0 ${width} ${height}`"
-      :style="{ transform: `rotate(${rotate}deg)` }"
-    >
+    <svg :width="width" :height="height" :viewBox="`0 0 ${width} ${height}`" :style="{ transform: `rotate(${rotate}deg)` }">
       <!-- 天池圆圈 -->
       <circle
         :cx="centerPoint.x"
@@ -43,20 +35,13 @@
           v-for="(_, latticeIndex) in layer.data"
           :key="`lattice-${layerIndex}-${latticeIndex}`"
           :d="getLatticePath(latticeIndex, layerIndex)"
-          :fill="
-            hasLatticeFill(latticeIndex, layerIndex)
-              ? getLatticeFillColor(latticeIndex, layerIndex)
-              : 'transparent'
-          "
+          :fill="hasLatticeFill(latticeIndex, layerIndex) ? getLatticeFillColor(latticeIndex, layerIndex) : 'transparent'"
           @click="handleLatticeClick(latticeIndex, layerIndex)"
-          style="cursor: pointer"
+          style="cursor: pointer;"
         />
 
         <!-- 层文字 -->
-        <g
-          v-for="(text, textIndex) in layer.data"
-          :key="`text-${layerIndex}-${textIndex}`"
-        >
+        <g v-for="(text, textIndex) in layer.data" :key="`text-${layerIndex}-${textIndex}`">
           <text
             v-if="!Array.isArray(text)"
             :x="getTextX(layerIndex, textIndex, layer)"
@@ -68,11 +53,9 @@
             dominant-baseline="middle"
             font-family="楷书"
             @click="handleLatticeClick(textIndex, layerIndex)"
-            style="cursor: pointer"
-          >
-            {{ text }}
-          </text>
-
+            style="cursor: pointer;"
+          >{{ text }}</text>
+          
           <!-- 同宫文字处理 -->
           <g v-else>
             <text
@@ -80,23 +63,15 @@
               :key="`subtext-${layerIndex}-${textIndex}-${subIndex}`"
               :x="getTogetherTextX(layerIndex, textIndex, subIndex, layer)"
               :y="getTogetherTextY(layerIndex, textIndex, subIndex, layer)"
-              :transform="
-                getTogetherTextTransform(layerIndex, textIndex, subIndex, layer)
-              "
-              :fill="
-                Array.isArray(layer.textColor)
-                  ? layer.textColor[subIndex]
-                  : layer.textColor
-              "
+              :transform="getTogetherTextTransform(layerIndex, textIndex, subIndex, layer)"
+              :fill="Array.isArray(layer.textColor) ? layer.textColor[subIndex] : layer.textColor"
               :font-size="props.autoFontSize ? baseFontSize : layer.fontSize"
               text-anchor="middle"
               dominant-baseline="middle"
               font-family="楷书"
               @click="handleLatticeClick(textIndex, layerIndex)"
-              style="cursor: pointer"
-            >
-              {{ subText }}
-            </text>
+              style="cursor: pointer;"
+            >{{ subText }}</text>
           </g>
         </g>
 
@@ -133,20 +108,12 @@
             :font-size="getScaleFontSize()"
             text-anchor="middle"
             dominant-baseline="middle"
-          >
-            {{ i }}
-          </text>
+          >{{ i }}</text>
         </g>
       </g>
     </svg>
-    <!-- 天心十字 -->
-    <svg
-      v-if="isShowTianxinCross"
-      class="tianxin-cross"
-      :width="width"
-      :height="height"
-      :viewBox="`0 0 ${width} ${height}`"
-    >
+        <!-- 天心十字 -->
+        <svg v-if="isShowTianxinCross" class="tianxin-cross" :width="width" :height="height" :viewBox="`0 0 ${width} ${height}`">
       <line
         :x1="centerPoint.x - tianxinCrossSize / 2"
         :y1="centerPoint.y"
@@ -168,37 +135,43 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 
-const emit = defineEmits(["latticeClick", "update:rotate"]);
+const emit = defineEmits(['latticeClick', 'update:rotate']);
+
+// 监听compassData变化
+watch(() => props.compassData, () => {
+  // 清理缓存
+  cachedResults.clear();
+}, { deep: true });
 
 const CORRECTION_ANGLE = -90;
-const TOGERTHER_STYLE_EQUALLY = "equally";
+const TOGERTHER_STYLE_EQUALLY = 'equally';
 
 const props = defineProps({
   width: {
     type: Number,
-    default: 500,
+    default: 500
   },
   height: {
     type: Number,
-    default: 500,
+    default: 500
   },
   rotate: {
     type: Number,
-    default: 0,
+    default: 0
   },
   compassData: {
     type: Array,
-    required: true,
+    required: true
   },
   layerFilt: {
     type: Array,
-    default: () => [],
+    default: () => []
   },
   latticeFill: {
     type: Array,
-    default: () => [],
+    default: () => []
   },
   scaclStyle: {
     type: Object,
@@ -206,57 +179,54 @@ const props = defineProps({
       minLineHeight: 10,
       midLineHeight: 25,
       maxLineHeight: 25,
-      numberFontSize: 30,
-    }),
+      numberFontSize: 30
+    })
   },
   autoFontSize: {
     type: Boolean,
-    default: true,
+    default: true
   },
   borderColor: {
     type: String,
-    default: "#000",
+    default: '#000'
   },
   scaleColor: {
     type: String,
-    default: "#000",
+    default: '#000'
   },
   scaleHighlightColor: {
     type: String,
-    default: "red",
+    default: 'red'
   },
   isShowTianxinCross: {
     type: Boolean,
-    default: true,
+    default: true
   },
   tianxinCrossColor: {
     type: String,
-    default: "red",
+    default: 'red'
   },
   tianxinCrossWidth: {
     type: Number,
-    default: 2,
-  },
+    default: 2
+  }
 });
 
 // 计算中心点
 const centerPoint = computed(() => ({
   x: props.width / 2,
-  y: props.height / 2,
+  y: props.height / 2
 }));
 
-const tianxinCrossSize = computed(() => {
-  return Math.max(props.width, props.height);
-});
+const tianxinCrossSize = computed(() =>  {
+      return Math.max(props.width, props.height);
+  });
 
 // 基础配置
 const radius = computed(() => {
   // 预留刻度线和文字的空间
-  const maxScaleSpace = props.scaclStyle
-    ? props.scaclStyle.maxLineHeight * 3
-    : 0; // 包括文字空间
-  const availableSpace =
-    Math.min(props.width, props.height) / 2 - maxScaleSpace;
+  const maxScaleSpace = props.scaclStyle ? (props.scaclStyle.maxLineHeight * 3) : 0; // 包括文字空间
+  const availableSpace = Math.min(props.width, props.height) / 2 - maxScaleSpace;
   return Math.max(availableSpace, 0); // 确保半径不为负
 });
 const tianChiRadius = computed(() => radius.value * 0.1);
@@ -264,8 +234,7 @@ const borderWidth = 1;
 
 // 计算每层高度
 const layerHeight = computed(() => {
-  const availableHeight =
-    (radius.value - tianChiRadius.value) / props.compassData.length;
+  const availableHeight = (radius.value - tianChiRadius.value) / props.compassData.length;
   return new Array(props.compassData.length).fill(availableHeight);
 });
 
@@ -285,13 +254,13 @@ function rads(degrees) {
 
 // 检查层填充
 function hasLayerFill(layerIndex) {
-  return props.layerFilt.some((fill) => fill[0] === layerIndex);
+  return props.layerFilt.some(fill => fill[0] === layerIndex);
 }
 
 // 获取层填充颜色
 function getLayerFillColor(layerIndex) {
-  const fill = props.layerFilt.find((fill) => fill[0] === layerIndex);
-  return fill ? fill[1] : "none";
+  const fill = props.layerFilt.find(fill => fill[0] === layerIndex);
+  return fill ? fill[1] : 'none';
 }
 
 // 获取层路径
@@ -313,51 +282,15 @@ function memoize(fn) {
 const getLayerPath = memoize((layerIndex) => {
   const innerRadius = getLayerRadius(layerIndex);
   const outerRadius = getLayerRadius(layerIndex + 1);
-
+  
   return `
-    M ${centerPoint.value.x + innerRadius * Math.cos(0)} ${
-    centerPoint.value.y + innerRadius * Math.sin(0)
-  }
-    A ${innerRadius} ${innerRadius} 0 1 1 ${
-    centerPoint.value.x + innerRadius * Math.cos(2 * Math.PI)
-  } ${centerPoint.value.y + innerRadius * Math.sin(2 * Math.PI)}
-    L ${centerPoint.value.x + outerRadius * Math.cos(2 * Math.PI)} ${
-    centerPoint.value.y + outerRadius * Math.sin(2 * Math.PI)
-  }
-    A ${outerRadius} ${outerRadius} 0 1 0 ${
-    centerPoint.value.x + outerRadius * Math.cos(0)
-  } ${centerPoint.value.y + outerRadius * Math.sin(0)}
+    M ${centerPoint.value.x + innerRadius * Math.cos(0)} ${centerPoint.value.y + innerRadius * Math.sin(0)}
+    A ${innerRadius} ${innerRadius} 0 1 1 ${centerPoint.value.x + innerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + innerRadius * Math.sin(2 * Math.PI)}
+    L ${centerPoint.value.x + outerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + outerRadius * Math.sin(2 * Math.PI)}
+    A ${outerRadius} ${outerRadius} 0 1 0 ${centerPoint.value.x + outerRadius * Math.cos(0)} ${centerPoint.value.y + outerRadius * Math.sin(0)}
     Z
   `.trim();
 });
-
-// const getLatticePath = memoize((latticeIndex, layerIndex) => {
-//   const layer = props.compassData[layerIndex];
-//   const count = layer.data.length;
-//   const startAngle = rads((360 / count) * latticeIndex);
-//   const endAngle = rads((360 / count) * (latticeIndex + 1));
-//   const innerRadius = getLayerRadius(layerIndex);
-//   const outerRadius = getLayerRadius(layerIndex + 1);
-
-//   const x1 = centerPoint.value.x + innerRadius * Math.cos(startAngle);
-//   const y1 = centerPoint.value.y + innerRadius * Math.sin(startAngle);
-//   const x2 = centerPoint.value.x + outerRadius * Math.cos(startAngle);
-//   const y2 = centerPoint.value.y + outerRadius * Math.sin(startAngle);
-//   const x3 = centerPoint.value.x + outerRadius * Math.cos(endAngle);
-//   const y3 = centerPoint.value.y + outerRadius * Math.sin(endAngle);
-//   const x4 = centerPoint.value.x + innerRadius * Math.cos(endAngle);
-//   const y4 = centerPoint.value.y + innerRadius * Math.sin(endAngle);
-
-//   return `
-//     M ${x1} ${y1}
-//     L ${x2} ${y2}
-//     A ${outerRadius} ${outerRadius} 0 0 1 ${x3} ${y3}
-//     L ${x4} ${y4}
-//     A ${innerRadius} ${innerRadius} 0 0 0 ${x1} ${y1}
-//     Z
-//   `.trim();
-// });
-
 // 清理缓存
 onMounted(() => {
   // 初始化时清理缓存
@@ -371,17 +304,17 @@ onUnmounted(() => {
 
 // 检查宫格填充
 function hasLatticeFill(latticeIndex, layerIndex) {
-  return props.latticeFill.some(
-    (fill) => fill[0] === latticeIndex && fill[1] === layerIndex
+  return props.latticeFill.some(fill => 
+    fill[0] === latticeIndex && fill[1] === layerIndex
   );
 }
 
 // 获取宫格填充颜色
 function getLatticeFillColor(latticeIndex, layerIndex) {
-  const fill = props.latticeFill.find(
-    (fill) => fill[0] === latticeIndex && fill[1] === layerIndex
+  const fill = props.latticeFill.find(fill => 
+    fill[0] === latticeIndex && fill[1] === layerIndex
   );
-  return fill ? fill[2] : "none";
+  return fill ? fill[2] : 'none';
 }
 
 // 获取宫格路径
@@ -430,13 +363,13 @@ const baseFontSize = computed(() => {
 // 获取文字位置和变换
 function getTextPosition(layerIndex, textIndex, layer) {
   const count = layer.data.length;
-  const angle = rads((360 / count) * textIndex + 360 / count / 2);
+  const angle = rads((360 / count) * textIndex + (360 / count) / 2);
   const r = getLayerRadius(layerIndex) + layerHeight.value[layerIndex] / 2;
-
+  
   return {
     x: centerPoint.value.x + r * Math.cos(angle),
     y: centerPoint.value.y + r * Math.sin(angle),
-    angle: (angle * 180) / Math.PI + 90,
+    angle: (angle * 180 / Math.PI) + 90
   };
 }
 
@@ -451,11 +384,7 @@ function getTextY(layerIndex, textIndex, layer) {
 function getTextTransform(layerIndex, textIndex, layer) {
   const pos = getTextPosition(layerIndex, textIndex, layer);
   // 如果设置了垂直显示，则根据文字位置计算角度，使其始终以圆心为底
-  const extraRotation = layer.vertical
-    ? pos.angle > 90 && pos.angle < 270
-      ? 270
-      : 90
-    : 0;
+  const extraRotation = layer.vertical ? (pos.angle > 90 && pos.angle < 270 ? 270 : 90) : 0;
   return `rotate(${pos.angle + extraRotation} ${pos.x} ${pos.y})`;
 }
 
@@ -464,22 +393,22 @@ function getTogetherTextPosition(layerIndex, textIndex, subIndex, layer) {
   const count = layer.data.length; // 宫格数量
   const singleAngle = 360 / count; // 每个宫格的角度
   const baseAngle = singleAngle * textIndex; // 当前宫格的起始角度
-
+  
   // 获取当前宫格内的文字数量
   const currentLatticeTexts = layer.data[textIndex];
   const textsCount = currentLatticeTexts.length;
-
+  
   // 计算当前宫格内文字的分布角度
   const textSpacing = singleAngle / (textsCount + 1);
   const textAngle = baseAngle + textSpacing * (subIndex + 1);
-
+  
   const angle = rads(textAngle);
   const r = getLayerRadius(layerIndex) + layerHeight.value[layerIndex] / 2;
 
   return {
     x: centerPoint.value.x + r * Math.cos(angle),
     y: centerPoint.value.y + r * Math.sin(angle),
-    angle: (angle * 180) / Math.PI + 90,
+    angle: (angle * 180 / Math.PI) + 90
   };
 }
 
@@ -507,12 +436,12 @@ function getDividerPosition(layerIndex, index) {
   return {
     start: {
       x: centerPoint.value.x + innerRadius * Math.cos(angle),
-      y: centerPoint.value.y + innerRadius * Math.sin(angle),
+      y: centerPoint.value.y + innerRadius * Math.sin(angle)
     },
     end: {
       x: centerPoint.value.x + outerRadius * Math.cos(angle),
-      y: centerPoint.value.y + outerRadius * Math.sin(angle),
-    },
+      y: centerPoint.value.y + outerRadius * Math.sin(angle)
+    }
   };
 }
 
@@ -536,31 +465,24 @@ function getDividerEndY(layerIndex, index) {
 function getScalePosition(index) {
   const angle = rads(index);
   const r = getLayerRadius(props.compassData.length);
-  const scaleLength =
-    index % 10 === 0
-      ? props.scaclStyle.maxLineHeight
-      : index % 5 === 0
-      ? props.scaclStyle.midLineHeight
-      : props.scaclStyle.minLineHeight;
-
+  const scaleLength = index % 10 === 0 ? props.scaclStyle.maxLineHeight :
+                     index % 5 === 0 ? props.scaclStyle.midLineHeight :
+                     props.scaclStyle.minLineHeight;
+  
   return {
     start: {
       x: centerPoint.value.x + r * Math.cos(angle),
-      y: centerPoint.value.y + r * Math.sin(angle),
+      y: centerPoint.value.y + r * Math.sin(angle)
     },
     end: {
       x: centerPoint.value.x + (r + scaleLength) * Math.cos(angle),
-      y: centerPoint.value.y + (r + scaleLength) * Math.sin(angle),
+      y: centerPoint.value.y + (r + scaleLength) * Math.sin(angle)
     },
     text: {
-      x:
-        centerPoint.value.x +
-        (r + props.scaclStyle.maxLineHeight * 2) * Math.cos(angle),
-      y:
-        centerPoint.value.y +
-        (r + props.scaclStyle.maxLineHeight * 2) * Math.sin(angle),
-      angle: (angle * 180) / Math.PI + 90,
-    },
+      x: centerPoint.value.x + (r + props.scaclStyle.maxLineHeight * 2) * Math.cos(angle),
+      y: centerPoint.value.y + (r + props.scaclStyle.maxLineHeight * 2) * Math.sin(angle),
+      angle: (angle * 180 / Math.PI) + 90
+    }
   };
 }
 
@@ -595,12 +517,13 @@ function getScaleTextTransform(index) {
 
 // 处理宫格点击事件
 function handleLatticeClick(latticeIndex, layerIndex) {
-  emit("latticeClick", {
+  emit('latticeClick', {
     latticeIndex,
     layerIndex,
-    data: props.compassData[layerIndex].data[latticeIndex],
+    data: props.compassData[layerIndex].data[latticeIndex]
   });
 }
+
 
 // 计算刻度文字大小
 function getScaleFontSize() {
@@ -608,7 +531,7 @@ function getScaleFontSize() {
   if (props.scaclStyle?.numberFontSize) {
     return props.scaclStyle.numberFontSize;
   }
-
+  
   // 根据罗盘半径计算合适的字体大小
   // 取罗盘半径的1/20作为基准字体大小
   const baseFontSize = radius.value / 20;
