@@ -8,7 +8,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.2.25"
+    "@element-plus/icons-vue": "^2.3.1",
+    "element-plus": "^2.9.5",
+    "vue": "^3.2.25",
+    "vue3-ace-editor": "^2.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",

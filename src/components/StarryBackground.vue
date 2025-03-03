@@ -42,11 +42,19 @@ import { ref, onMounted, onUnmounted } from 'vue';
 const props = defineProps({
   width: {
     type: Number,
-    default: window.innerWidth
+    default: () => {
+      // 计算对角线长度作为渲染宽度
+      const diagonalLength = Math.ceil(Math.sqrt(2) * window.innerWidth);
+      return diagonalLength;
+    }
   },
   height: {
     type: Number,
-    default: window.innerHeight
+    default: () => {
+      // 计算对角线长度作为渲染高度
+      const diagonalLength = Math.ceil(Math.sqrt(2) * window.innerHeight);
+      return diagonalLength;
+    }
   }
 });
 
@@ -138,9 +146,12 @@ onUnmounted(() => {
 .starry-background {
   width: 100%;
   height: 100%;
-  left: 0;
+  left: 50%;
+  top: 50%;
   position: fixed;
   background: transparent;
+  transform-origin: center center;
+  transform: translate(-50%, -50%);
   animation: rotate 120s linear infinite;
 }
 

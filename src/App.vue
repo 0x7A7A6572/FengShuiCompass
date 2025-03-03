@@ -2,7 +2,6 @@
 import FengShuiCompass from "./components/FengShuiCompass.vue";
 import FengShuiCompassSvg from "./components/fs-compass-svg/FengShuiCompassSvg.vue";
 import { CompassData } from "./components/compass-main.js";
-import StarryBackground from "./components/StarryBackground.vue";
 
 import { ref, reactive } from "vue";
 let compassDataObj = new CompassData();
@@ -42,9 +41,8 @@ function getDataByIndex() {
 
 function handleLatticeClick(event) {
   console.log("宫格被点击：", event);
-  // 设置选中的层和宫
-  selectLayer.value = event.layerIndex.toString();
-  selectLattice.value = event.latticeIndex.toString();
+  // 这里可以根据需要处理宫格点击事件
+  // event包含：latticeIndex（宫格索引）、layerIndex（层索引）和data（宫格数据）
 }
 
 function changeLayerFilt() {
@@ -98,7 +96,6 @@ function changeLatticeFill() {
 </script>
 
 <template>
-  <StarryBackground />
   <div class="gemc-layout">
     <!-- <div class="compass-container">
       <h3 class="compass-title">Canvas版本</h3>
@@ -124,9 +121,6 @@ function changeLatticeFill() {
         :compassData="compassData"
         :layerFilt="layerFilt"
         :latticeFill="latticeFill"
-        borderColor="#DDDDDD"
-        scaleColor="#DDDDDD"
-        scaleHighlightColor="#DDDDDD"
         :scaclStyle="scaclStyle"
         @latticeClick="handleLatticeClick"
       ></FengShuiCompassSvg>
@@ -224,7 +218,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background: rgb(12, 12, 12);
+  background: rgb(46, 47, 46);
 }
 .gemc-layout {
   display: flex;
