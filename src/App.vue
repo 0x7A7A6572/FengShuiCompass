@@ -1,14 +1,11 @@
 <script setup>
-import FengShuiCompass from "./components/FengShuiCompass.vue";
 import FengShuiCompassSvg from "./components/fs-compass-svg/FengShuiCompassSvg.vue";
-import { CompassData } from "./components/compass-main.js";
+import CompassData from "./data/compass-data.js";
 import StarryBackground from "./components/StarryBackground.vue";
 import ControlPanel from "./components/ControlPanel.vue";
-import { ElDialog, ElForm, ElFormItem, ElInput, ElButton } from "element-plus";
 import "element-plus/dist/index.css";
 
 import { ref } from "vue";
-let compassDataObj = new CompassData();
 //旋转角度
 let rotate = ref(0);
 //罗盘大小
@@ -17,7 +14,7 @@ let compassSize = ref({
   height: 800,
 });
 //所有层的罗盘数据
-let compassData = ref(compassDataObj.getAllData());
+let compassData = ref(CompassData);
 //存储层的填充数据
 let layerFilt = ref([]);
 //存储宫的填充数据

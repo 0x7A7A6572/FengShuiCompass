@@ -64,6 +64,7 @@
             v-model="selectLayerColor"
             @change="changeLayerFilt"
             size="small"
+            show-alpha
           />
         </div>
         <div class="color-select">
@@ -80,6 +81,7 @@
             v-model="selectLatticeColor"
             @change="changeLatticeFill"
             size="small"
+            show-alpha
           />
         </div>
         <div class="color-select">
@@ -88,6 +90,7 @@
             v-model="selectLatticeTextColor"
             @change="changeLatticeTextColorFill"
             size="small"
+            show-alpha
           />
         </div>
       </div>
@@ -99,6 +102,7 @@
             v-model="borderColor"
             @change="$emit('update:borderColor', borderColor)"
             size="small"
+            show-alpha
           />
         </div>
         <div class="color-select">
@@ -107,6 +111,7 @@
             v-model="scaleColor"
             @change="$emit('update:scaleColor', scaleColor)"
             size="small"
+            show-alpha
           />
         </div>
         <div class="color-select">
@@ -115,6 +120,7 @@
             v-model="scaleHighlightColor"
             @change="$emit('update:scaleHighlightColor', scaleHighlightColor)"
             size="small"
+            show-alpha
           />
         </div>
       </div>
@@ -270,19 +276,24 @@ function updateCompassSize() {
 }
 
 function changeLayerFilt() {
-  const newLayerFilt = [...props.layerFilt];
+  const newLatticeFill = [...props.latticeFill];
   const layerIndex = parseInt(selectLayer.value);
-  const existingIndex = newLayerFilt.findIndex(
-    (item) => item[0] === layerIndex
-  );
+  const layerData = props.compassData[layerIndex]?.data || [];
 
-  if (existingIndex === -1) {
-    newLayerFilt.push([layerIndex, selectLayerColor.value]);
-  } else {
-    newLayerFilt[existingIndex][1] = selectLayerColor.value;
-  }
+  // 遍历当前层的所有宫格
+  layerData.forEach((_, latticeIndex) => {
+    const existingIndex = newLatticeFill.findIndex(
+      (item) => item[0] === latticeIndex && item[1] === layerIndex
+    );
 
-  emit("update:layerFilt", newLayerFilt);
+    if (existingIndex === -1) {
+      newLatticeFill.push([latticeIndex, layerIndex, selectLayerColor.value]);
+    } else {
+      newLatticeFill[existingIndex][2] = selectLayerColor.value;
+    }
+  });
+
+  emit("update:latticeFill", newLatticeFill);
 }
 
 function changeLatticeFill() {
