@@ -1,7 +1,8 @@
 # FengShuiCompass - 自定义罗盘
-自定义罗盘数据和样式，基本样式配置，控制罗盘旋转是外部控制。可自定义显示的数据，文字颜色，具体位置填充，文字显示样式等，之前写的，许多结构很陈旧，现在用vue重新封装，并修改了部分逻辑。
-![ui1](doc/ui1.png)
-
+自定义罗盘数据和样式，基本样式配置.
+分 canvas 版本 和 svg 版本
+<!-- ![ui1](doc/ui1.png) -->
+![ui1](doc/svgu1.png)
 # 开始
 概念：
 
@@ -9,54 +10,27 @@
 
  宫：一层中的一格为宫，下标从0开始
 
-## 方式一 直接使用compass-main.js
-```js
-import { FengShuiCompass, CompassData } from "./compass-main.js";
-const compassData = new CompassData().getAllData();
-const fs = new FengShuiCompass();
- let canvas /* = canvas 元素 */
-//获取canvas上下文
- let ctx = canvas.getContext("2d");
-//链式调用显示罗盘
-    //设置中心点
-  fs.setCenterPoint(props.width / 2, props.height / 2)
-    //设置半径
-    .setRadius(props.height / 2)
-    //设置宫填充色
-    .setLatticeFill([[]])
-    //设置层填充色
-    .setLayerFill([])
-    //设置刻度样式
-    .setScaclStyle({
-      minLineHeight: 10,
-      midLineHeight: 25,
-      maxLineHeight: 25,
-      numberFontSize: 30,
-    })
-    //添加罗盘数据
-    .setCompassData(compassData) //必须在配置所有基本数据完成之后执行
-    .draw(ctx); //draw 必须setCompassData完成之后执行 终止链式
-```
 ## compassData - 配置
-内部预置了一个基本数据样式，compassData的数据格式为数据内部每一层的数据为Object。
-例子： [{层0...},{层1...}，...]
-层数据有
+内部预置了一个基本数据样式，compassData 的数据格式为数组，每个元素代表一层的配置对象。格式：`[{层0配置}, {层1配置}, ...]`
 
- *层名：**name**， -String
+### 层配置参数
 
- 起始角度：**startAngle**，
+| 参数名 | 类型 | 默认值 | 必填 | 说明 |
+|--------|------|--------|------|------|
+| name | String/Array | - | 是 | 层名称。当为数组时可配置多个名称 |
+| startAngle | Number | 0 | 否 | 起始角度，范围 0-360 |
+| fontSize | Number | 30 | 否 | 字体大小 |
+| textColor | String/Array | '#000' | 否 | 字体颜色。当为数组时可配置多个颜色 |
+| vertical | Boolean | false | 否 | 是否垂直显示文字 |
+| data | Array | - | 是 | 层数据，支持一维数组和二维数组 |
+| togetherStyle | String | 'empty' | 否 | 统一风格，见下方说明 |
 
- 字体大小：**fontSize** ，
+### togetherStyle 可选值
 
- 字体颜色： **textColor**，
- 
- 字体垂直显示：**vertical**，
- 
- 统一风格（bate）： **togetherStyle** 暂时只支持【 **默认：empty** 和 **平分 ：equally**】
-  
- *层数据：  **data**   支持一维，二维数组
-
-部分数据有默认值，详细数据参考位置，**compass-main.js -> class FengShuiCompass {**.
+| 值 | 说明 |
+|--------|------|
+| empty | 默认样式，常规显示 |
+| equally | 平分宫格样式 |
 ```js
 [
   {
@@ -84,9 +58,104 @@ const fs = new FengShuiCompass();
       ...
 ]
 ```
-单层多数据-> ![ui2](./doc/ui2.png)  文字垂直-> ![ui3](./doc/ui3.png)
+单层多数据-> ![ui2](./doc/ui2.png)  
 
-## 方式二 vue中使用封装的FengShuiCompass.vue 组件
+文字垂直-> ![ui3](./doc/ui3.png)
+
+
+## SVG版本的FengShuiCompassSvg.vue 组件
+相比Canvas版本，SVG版本具有以下优势：
+1. 更好的缩放性能，不会失真
+2. 更容易实现交互效果
+
+### 基本使用
+```html
+<script setup>
+import FengShuiCompassSvg from "./components/fs-compass-svg/FengShuiCompassSvg.vue";
+import CompassData from "./data/compass-data.js";
+
+// 罗盘旋转角度
+let rotate = ref(0);
+// 罗盘数据
+let compassData = ref(CompassData);
+// 层填充数据
+let layerFilt = ref([]);
+// 宫格填充数据
+let latticeFill = ref([]);
+
+// 处理宫格点击事件
+function handleLatticeClick(event) {
+  console.log("宫格被点击：", event);
+}
+</script>
+
+<template>
+  <FengShuiCompassSvg
+    :width="800"
+    :height="800"
+    :rotate="rotate"
+    :compassData="compassData"
+    :layerFill="layerFilt"
+    :latticeFill="latticeFill"
+    :borderColor="'#000'"
+    :scaleColor="'#000'"
+    :scaleHighlightColor="'red'"
+    :isShowTianxinCross="true"
+    :tianxinCrossColor="'red'"
+    :tianxinCrossWidth="2"
+    @latticeClick="handleLatticeClick"
+  />
+</template>
+```
+
+### 组件属性
+| 属性名 | 类型 | 默认值 | 说明 |
+|--------|------|---------|------|
+| width | Number | - | 罗盘宽度 |
+| height | Number | - | 罗盘高度 |
+| rotate | Number | 0 | 罗盘旋转角度 |
+| compassData | Array | [] | 罗盘数据配置，格式同Canvas版本 |
+| layerFill | Array | [] | 层填充配置，支持颜色和渐变 |
+| latticeFill | Array | [] | 宫格填充配置 |
+| borderColor | String | '#000' | 罗盘边框颜色 |
+| scaleColor | String | '#000' | 刻度线颜色 |
+| scaleHighlightColor | String | 'red' | 高亮刻度线颜色 |
+| isShowTianxinCross | Boolean | true | 是否显示天心十字 |
+| tianxinCrossColor | String | 'red' | 天心十字颜色 |
+| tianxinCrossWidth | Number | 2 | 天心十字线宽 |
+| autoFontSize | Boolean | false | 是否自动计算字体大小 |
+
+### 事件
+| 事件名 | 参数 | 说明 |
+|--------|------|------|
+| latticeClick | {layerIndex, latticeIndex} | 宫格点击事件，返回层索引和宫格索引 |
+
+### 渐变填充示例
+```js
+// 线性渐变
+let layerFill = ref([
+  'linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)',
+  'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)'
+]);
+
+// 径向渐变
+let layerFill = ref([
+  'radial-gradient(circle, #fe6b8b 30%, #ff8e53 90%)',
+  'radial-gradient(circle, #2196F3 30%, #21CBF3 90%)'
+]);
+```
+
+### 自动字体大小
+启用autoFontSize后，组件会根据罗盘大小自动计算合适的字体大小：
+```html
+<FengShuiCompassSvg
+  :autoFontSize="true"
+  ...
+/>
+```
+
+
+## canvas 版本 的FengShuiCompass.vue 组件 （旧）
 详细可参考示例代码
 ```html
 <script setup>
@@ -105,9 +174,39 @@ const fs = new FengShuiCompass();
 ```
 此处的width，height 为canvs画布大小，非div大小
 
-
-# 应用在小程序的demo
-![demo](./doc/demo.jpg)
-
-# 其他&方向
-数据配置方式还未加入直接配置宫层填充色方式，封装的组件功能还很少。
+###  canvas 版本直接使用compass-main.js 
+```js
+import { FengShuiCompass, CompassData } from "./compass-main.js";
+const compassData = new CompassData().getAllData();
+const fs = new FengShuiCompass();
+ let canvas /* = canvas 元素 */
+//获取canvas上下文
+ let ctx = canvas.getContext("2d");
+//链式调用显示罗盘
+    //设置中心点
+  fs.setCenterPoint(props.width / 2, props.height / 2)
+    //设置半径
+    .setRadius(props.height / 2)
+    //设置宫填充色（二维数组格式[层][宫]，支持循环填充且不覆盖已有颜色）
+    .setLatticeFill([
+      [
+        ['#FF0000', '#00FF00'], // 第0层各宫颜色（当宫数>颜色数时会循环使用）
+        ['rgba(255,165,0,0.5)'] // 第1层颜色（单颜色自动循环）
+      ]
+    ])
+    //设置层填充色（数组格式，支持循环填充且保留原有刻度线）
+    .setLayerFill([
+      'rgba(0,0,255,0.2)', // 第0层背景色
+      ['linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%)'] // 第1层渐变背景
+    ])
+    //设置刻度样式
+    .setScaclStyle({
+      minLineHeight: 10,
+      midLineHeight: 25,
+      maxLineHeight: 25,
+      numberFontSize: 30,
+    })
+    //添加罗盘数据
+    .setCompassData(compassData) //必须在配置所有基本数据完成之后执行
+    .draw(ctx); //draw 必须setCompassData完成之后执行 终止链式
+```
