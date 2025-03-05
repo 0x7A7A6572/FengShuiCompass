@@ -135,6 +135,17 @@
         </div>
       </div>
       <div class="control-section">
+        <el-text class="sub-title">主题选择</el-text>
+        <div class="themes-container">
+          <div class="theme-cards">
+            <div v-for="theme in themes" :key="theme.name" class="theme-card" :class="{ active: currentTheme === theme.name }" @click="applyTheme(theme.data, theme.name)">
+              <div class="theme-preview" :style="{ backgroundImage: `url(${theme.preview})`, backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
+              <h3>{{ theme.name }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="control-section">
         <el-text class="sub-title">罗盘渲染数据</el-text>
         <div class="flex-center" style="justify-content: end">
           <el-button @click="showFullscreenEditor = true" type="primary">
@@ -195,8 +206,11 @@ import { ref } from "vue";
 import { VAceEditor } from "vue3-ace-editor";
 import { ArrowRight, ArrowLeft } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import defaultTheme from "../themes/theme-crice.js";
+import compassTheme from "../themes/theme-compass.js";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
+import darkTheme from "../themes/theme-dark.js";
 
 const props = defineProps({
   compassData: {
@@ -256,6 +270,15 @@ const components = {
 
 const showFullscreenEditor = ref(false);
 const isPanelExpanded = ref(true);
+const themes = ref([{ name: "默认主题", data: defaultTheme, preview: new URL('../themes/theme-crice-preview.png', import.meta.url).href }, { name: "罗盘主题", data: compassTheme, preview: new URL('../themes/theme-compass-preview.png', import.meta.url).href }, { name: "暗夜主题", data: darkTheme, preview: new URL('../themes/theme-dark-preview.png', import.meta.url).href }]);
+const currentTheme = ref(themes.value[0].name);
+
+function applyTheme(themeData, themeName) {
+  editorContent.value = JSON.stringify(themeData, null, 2);
+  updateCompassData();
+  currentTheme.value = themeName;
+  ElMessage.success("主题应用成功");
+}
 const selectLayer = ref(0);
 const selectLayerColor = ref("#ff0000");
 const selectLattice = ref("");
@@ -438,16 +461,26 @@ defineExpose({
 }
 
 :deep(.el-slider .el-slider__runway) {
-  background-color: #4a4a4a;
+  background-color: #2c2c2c;
+  height: 8px;
+  border-radius: 4px;
 }
 
 :deep(.el-slider .el-slider__bar) {
-  background-color: #909399;
+  background-color: #409eff;
+  height: 8px;
+  border-radius: 4px;
 }
 
 :deep(.el-slider .el-slider__button) {
-  border-color: #909399;
-  background-color: #909399;
+  border-color: #409eff;
+  background-color: #409eff;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+  &:hover {
+    transform: scale(1.2);
+  }
 }
 
 :deep(.el-select) {
@@ -494,7 +527,84 @@ defineExpose({
   background-color: #2c4d57;
   margin-top: 10px;
 }
+.themes-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 10px 0;
+  /* 自定义滚动条样式 */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #4a4a4a;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #606060;
+  }
+}
+.theme-cards {
+  display: flex;
+  gap: 16px;
+  padding: 0 4px;
+}
 
+.theme-card {
+  flex: 0 0 200px;
+  background: #2c2c2c;
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid transparent;
+  position: relative;
+}
+
+.theme-card.active {
+  background: #3a3a3a;
+  border-color: #409eff;
+  box-shadow: 0 0 15px rgba(64, 158, 255, 0.3);
+}
+
+.theme-card.active::after {
+  content: "当前主题";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #409eff;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.theme-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  border-color: #409eff;
+}
+
+.theme-card h3 {
+  margin: 8px 0 0 0;
+  color: #d1d1d1;
+  font-size: 16px;
+}
+
+.theme-preview {
+  width: 100%;
+  height: 120px;
+  background: #3c3c3c;
+  border-radius: 4px;
+}
 :deep(.el-button:hover) {
   background-color: #595959;
   border-color: #707070;
