@@ -211,6 +211,7 @@ import compassTheme from "../themes/theme-compass.js";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
 import darkTheme from "../themes/theme-dark.js";
+import polygonTheme from "../themes/theme-polygon.js";
 
 const props = defineProps({
   compassData: {
@@ -270,7 +271,7 @@ const components = {
 
 const showFullscreenEditor = ref(false);
 const isPanelExpanded = ref(true);
-const themes = ref([{ name: "默认主题", data: defaultTheme, preview: new URL('../themes/theme-crice-preview.png', import.meta.url).href }, { name: "罗盘主题", data: compassTheme, preview: new URL('../themes/theme-compass-preview.png', import.meta.url).href }, { name: "暗夜主题", data: darkTheme, preview: new URL('../themes/theme-dark-preview.png', import.meta.url).href }]);
+const themes = ref([{ name: "默认主题", data: defaultTheme, preview: new URL('../themes/theme-crice-preview.png', import.meta.url).href }, { name: "罗盘主题", data: compassTheme, preview: new URL('../themes/theme-compass-preview.png', import.meta.url).href }, { name: "暗夜主题", data: darkTheme, preview: new URL('../themes/theme-dark-preview.png', import.meta.url).href }, { name: "棱形主题", data: polygonTheme, preview: new URL('../themes/theme-polygon-preview.png', import.meta.url).href }]);
 const currentTheme = ref(themes.value[0].name);
 
 function applyTheme(themeData, themeName) {

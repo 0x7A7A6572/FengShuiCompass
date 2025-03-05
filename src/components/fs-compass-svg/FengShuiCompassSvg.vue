@@ -14,15 +14,25 @@
 
       <!-- 各层圆环 -->
       <g v-for="(layer, layerIndex) in compassData" :key="layerIndex">
-        <!-- 层边框圆圈 -->
-        <circle
-          :cx="centerPoint.x"
-          :cy="centerPoint.y"
-          :r="getLayerRadius(layerIndex + 1)"
-          :stroke="borderColor"
-          :stroke-width="borderWidth"
-          fill="none"
-        />
+        <!-- 层边框 -->
+        <template v-if="layer.shape === 'circle' || !layer.shape">
+          <circle
+            :cx="centerPoint.x"
+            :cy="centerPoint.y"
+            :r="getLayerRadius(layerIndex + 1)"
+            :stroke="borderColor"
+            :stroke-width="borderWidth"
+            fill="none"
+          />
+        </template>
+        <template v-else>
+          <path
+            :d="getLayerBorderPath(layerIndex)"
+            :stroke="borderColor"
+            :stroke-width="borderWidth"
+            fill="none"
+          />
+        </template>
         <!-- 层填充 -->
         <path
           v-if="hasLayerFill(layerIndex)"
@@ -282,14 +292,38 @@ function memoize(fn) {
 const getLayerPath = memoize((layerIndex) => {
   const innerRadius = getLayerRadius(layerIndex);
   const outerRadius = getLayerRadius(layerIndex + 1);
+  const layerShape = props.compassData[layerIndex].shape || 'circle';
   
-  return `
-    M ${centerPoint.value.x + innerRadius * Math.cos(0)} ${centerPoint.value.y + innerRadius * Math.sin(0)}
-    A ${innerRadius} ${innerRadius} 0 1 1 ${centerPoint.value.x + innerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + innerRadius * Math.sin(2 * Math.PI)}
-    L ${centerPoint.value.x + outerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + outerRadius * Math.sin(2 * Math.PI)}
-    A ${outerRadius} ${outerRadius} 0 1 0 ${centerPoint.value.x + outerRadius * Math.cos(0)} ${centerPoint.value.y + outerRadius * Math.sin(0)}
-    Z
-  `.trim();
+  if (layerShape === 'circle') {
+    return `
+      M ${centerPoint.value.x + innerRadius * Math.cos(0)} ${centerPoint.value.y + innerRadius * Math.sin(0)}
+      A ${innerRadius} ${innerRadius} 0 1 1 ${centerPoint.value.x + innerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + innerRadius * Math.sin(2 * Math.PI)}
+      L ${centerPoint.value.x + outerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + outerRadius * Math.sin(2 * Math.PI)}
+      A ${outerRadius} ${outerRadius} 0 1 0 ${centerPoint.value.x + outerRadius * Math.cos(0)} ${centerPoint.value.y + outerRadius * Math.sin(0)}
+      Z
+    `.trim();
+  } else {
+    const sides = props.compassData[layerIndex].data.length;
+    let path = [];
+    
+    for (let i = 0; i <= sides; i++) {
+      const angle = (i * 2 * Math.PI) / sides;
+      const x1 = centerPoint.value.x + innerRadius * Math.cos(angle);
+      const y1 = centerPoint.value.y + innerRadius * Math.sin(angle);
+      const x2 = centerPoint.value.x + outerRadius * Math.cos(angle);
+      const y2 = centerPoint.value.y + outerRadius * Math.sin(angle);
+      
+      if (i === 0) {
+        path.push(`M ${x1} ${y1}`);
+        path.push(`L ${x2} ${y2}`);
+      } else {
+        path.push(`L ${x2} ${y2}`);
+      }
+    }
+    
+    path.push('Z');
+    return path.join(' ');
+  }
 });
 // 清理缓存
 onMounted(() => {
@@ -325,29 +359,54 @@ function getLatticePath(latticeIndex, layerIndex) {
   const endAngle = rads((360 / count) * (latticeIndex + 1));
   const innerRadius = getLayerRadius(layerIndex);
   const outerRadius = getLayerRadius(layerIndex + 1);
+  const layerShape = layer.shape || 'circle';
 
-  // 计算当前宫格的四个角点坐标
-  const x1 = centerPoint.value.x + innerRadius * Math.cos(startAngle);
-  const y1 = centerPoint.value.y + innerRadius * Math.sin(startAngle);
-  const x2 = centerPoint.value.x + outerRadius * Math.cos(startAngle);
-  const y2 = centerPoint.value.y + outerRadius * Math.sin(startAngle);
-  const x3 = centerPoint.value.x + outerRadius * Math.cos(endAngle);
-  const y3 = centerPoint.value.y + outerRadius * Math.sin(endAngle);
-  const x4 = centerPoint.value.x + innerRadius * Math.cos(endAngle);
-  const y4 = centerPoint.value.y + innerRadius * Math.sin(endAngle);
+  if (layerShape === 'circle') {
+    const x1 = centerPoint.value.x + innerRadius * Math.cos(startAngle);
+    const y1 = centerPoint.value.y + innerRadius * Math.sin(startAngle);
+    const x2 = centerPoint.value.x + outerRadius * Math.cos(startAngle);
+    const y2 = centerPoint.value.y + outerRadius * Math.sin(startAngle);
+    const x3 = centerPoint.value.x + outerRadius * Math.cos(endAngle);
+    const y3 = centerPoint.value.y + outerRadius * Math.sin(endAngle);
+    const x4 = centerPoint.value.x + innerRadius * Math.cos(endAngle);
+    const y4 = centerPoint.value.y + innerRadius * Math.sin(endAngle);
 
-  // 使用精确的SVG路径命令绘制宫格
-  // M: 移动到起点
-  // L: 画直线
-  // A: 画圆弧，参数：rx ry x-axis-rotation large-arc-flag sweep-flag x y
-  return `
-    M ${x1} ${y1}
-    L ${x2} ${y2}
-    A ${outerRadius} ${outerRadius} 0 0 1 ${x3} ${y3}
-    L ${x4} ${y4}
-    A ${innerRadius} ${innerRadius} 0 0 0 ${x1} ${y1}
-    Z
-  `.trim();
+    return `
+      M ${x1} ${y1}
+      L ${x2} ${y2}
+      A ${outerRadius} ${outerRadius} 0 0 1 ${x3} ${y3}
+      L ${x4} ${y4}
+      A ${innerRadius} ${innerRadius} 0 0 0 ${x1} ${y1}
+      Z
+    `.trim();
+  } else {
+    const sides = count;
+    const sideAngle = (2 * Math.PI) / sides;
+    const startAngle = rads((360 / count) * latticeIndex);
+    const endAngle = rads((360 / count) * (latticeIndex + 1));
+    
+    let path = [];
+    // 绘制外圈路径
+    const x1 = centerPoint.value.x + outerRadius * Math.cos(startAngle);
+    const y1 = centerPoint.value.y + outerRadius * Math.sin(startAngle);
+    const x2 = centerPoint.value.x + outerRadius * Math.cos(endAngle);
+    const y2 = centerPoint.value.y + outerRadius * Math.sin(endAngle);
+    
+    path.push(`M ${x1} ${y1}`);
+    path.push(`L ${x2} ${y2}`);
+    
+    // 绘制内圈路径
+    const x3 = centerPoint.value.x + innerRadius * Math.cos(endAngle);
+    const y3 = centerPoint.value.y + innerRadius * Math.sin(endAngle);
+    const x4 = centerPoint.value.x + innerRadius * Math.cos(startAngle);
+    const y4 = centerPoint.value.y + innerRadius * Math.sin(startAngle);
+    
+    path.push(`L ${x3} ${y3}`);
+    path.push(`L ${x4} ${y4}`);
+    path.push('Z');
+    
+    return path.join(' ');
+  }
 }
 
 // 计算基础字体大小
@@ -423,6 +482,62 @@ function getTogetherTextY(layerIndex, textIndex, subIndex, layer) {
 function getTogetherTextTransform(layerIndex, textIndex, subIndex, layer) {
   const pos = getTogetherTextPosition(layerIndex, textIndex, subIndex, layer);
   return `rotate(${pos.angle} ${pos.x} ${pos.y})`;
+}
+
+// 获取层边框路径
+function getLayerBorderPath(layerIndex) {
+  const layer = props.compassData[layerIndex];
+  const sides = layer.data.length;
+  const radius = getLayerRadius(layerIndex + 1);
+  let path = [];
+  
+  // 检查当前层是否为多边形
+  if (layer.shape !== 'circle' && layer.shape) {
+    // 检查上一层是否为圆形（如果存在）
+    const hasCircleAbove = layerIndex + 1 < props.compassData.length && 
+      (props.compassData[layerIndex + 1].shape === 'circle' || !props.compassData[layerIndex + 1].shape);
+    
+    // 检查下一层是否为圆形（如果存在）
+    const hasCircleBelow = layerIndex > 0 && 
+      (props.compassData[layerIndex - 1].shape === 'circle' || !props.compassData[layerIndex - 1].shape);
+    
+    // 绘制多边形路径
+    for (let i = 0; i <= sides; i++) {
+      const angle = (i * 2 * Math.PI) / sides;
+      const x = centerPoint.value.x + radius * Math.cos(angle);
+      const y = centerPoint.value.y + radius * Math.sin(angle);
+      
+      if (i === 0) {
+        path.push(`M ${x} ${y}`);
+      } else {
+        path.push(`L ${x} ${y}`);
+      }
+    }
+    
+    path.push('Z');
+    
+    // 如果上层是圆形，添加外部圆形边界
+    if (hasCircleAbove) {
+      path.push(`M ${centerPoint.value.x + radius} ${centerPoint.value.y}`);
+      path.push(`A ${radius} ${radius} 0 1 1 ${centerPoint.value.x - radius} ${centerPoint.value.y}`);
+      path.push(`A ${radius} ${radius} 0 1 1 ${centerPoint.value.x + radius} ${centerPoint.value.y}`);
+    }
+    
+    // 如果下层是圆形，添加内部圆形边界
+    if (hasCircleBelow) {
+      const innerRadius = getLayerRadius(layerIndex);
+      path.push(`M ${centerPoint.value.x + innerRadius} ${centerPoint.value.y}`);
+      path.push(`A ${innerRadius} ${innerRadius} 0 1 1 ${centerPoint.value.x - innerRadius} ${centerPoint.value.y}`);
+      path.push(`A ${innerRadius} ${innerRadius} 0 1 1 ${centerPoint.value.x + innerRadius} ${centerPoint.value.y}`);
+    }
+  } else {
+    // 当前层是圆形，使用原来的圆形绘制逻辑
+    path.push(`M ${centerPoint.value.x + radius} ${centerPoint.value.y}`);
+    path.push(`A ${radius} ${radius} 0 1 1 ${centerPoint.value.x - radius} ${centerPoint.value.y}`);
+    path.push(`A ${radius} ${radius} 0 1 1 ${centerPoint.value.x + radius} ${centerPoint.value.y}`);
+  }
+  
+  return path.join(' ');
 }
 
 // 获取分隔线位置

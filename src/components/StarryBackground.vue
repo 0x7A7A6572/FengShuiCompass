@@ -6,8 +6,8 @@
         <stop offset="100%" stop-color="#fff" stop-opacity="0" />
       </radialGradient>
       <radialGradient id="starGradientFill" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#FFF" stop-opacity="1" />
-        <stop offset="100%" stop-color="#7df" stop-opacity="0" />
+        <stop offset="0%" stop-color="#268" stop-opacity="1" />
+        <stop offset="100%" stop-color="#268" stop-opacity="0" />
       </radialGradient>
     </defs>
 
