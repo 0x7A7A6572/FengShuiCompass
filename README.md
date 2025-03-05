@@ -1,6 +1,9 @@
 # FengShuiCompass - 自定义罗盘
 自定义罗盘数据和样式，基本样式配置.
 分 canvas 版本 和 svg 版本
+
+在线演示：[https://compass.zzerx.cn/](https://compass.zzerx.cn/)
+
 <!-- ![ui1](doc/ui1.png) -->
 ![ui1](doc/svgu1.png)
 # 开始
@@ -24,6 +27,7 @@
 | vertical | Boolean | false | 否 | 是否垂直显示文字 |
 | data | Array | - | 是 | 层数据，支持一维数组和二维数组 |
 | togetherStyle | String | 'empty' | 否 | 统一风格，见下方说明 |
+| shape | String | 'circle' | 否 | 层形状，可选值：'circle'(圆形)、'polygon'(多边形)，如果使用多边形建议保持边数量一致，如果混用多边形和圆形，建议圆形在外，多边形在内 |
 
 ### togetherStyle 可选值
 
@@ -31,6 +35,23 @@
 |--------|------|
 | empty | 默认样式，常规显示 |
 | equally | 平分宫格样式 |
+
+### shape 可选值
+
+| 值 | 说明 |
+|--------|------|
+| circle | 默认样式，圆形层 |
+| polygon | 多边形层，根据宫格数量自动生成正多边形 |
+
+多边形示例：
+```js
+{
+  name: '八卦',
+  shape: 'polygon',  // 设置为八边形
+  data: ["坎", "艮", "震", "巽", "离", "坤", "兑", "乾"],
+  // ... 其他配置
+}
+```
 ```js
 [
   {
@@ -209,4 +230,3 @@ const fs = new FengShuiCompass();
     //添加罗盘数据
     .setCompassData(compassData) //必须在配置所有基本数据完成之后执行
     .draw(ctx); //draw 必须setCompassData完成之后执行 终止链式
-```
