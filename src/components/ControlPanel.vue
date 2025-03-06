@@ -11,11 +11,11 @@
         <div class="flex-center">
           <el-text>角度：</el-text>
           <el-slider
-            v-model="rotate"
+            :model-value="rotate"
+            @update:model-value="$emit('update:rotate', $event)"
             :min="0"
             :max="360"
             :step="1"
-            @input="$emit('update:rotate', rotate)"
           />
         </div>
       </div>
@@ -99,8 +99,8 @@
         <div class="color-select">
           <el-text>边框颜色：</el-text>
           <el-color-picker
-            v-model="borderColor"
-            @change="$emit('update:borderColor', borderColor)"
+            :model-value="borderColor"
+            @update:model-value="$emit('update:borderColor', $event)"
             size="small"
             show-alpha
           />
@@ -108,8 +108,8 @@
         <div class="color-select">
           <el-text>刻度颜色：</el-text>
           <el-color-picker
-            v-model="scaleColor"
-            @change="$emit('update:scaleColor', scaleColor)"
+            :model-value="scaleColor"
+            @update:model-value="$emit('update:scaleColor', $event)"
             size="small"
             show-alpha
           />
@@ -117,8 +117,8 @@
         <div class="color-select">
           <el-text>高亮刻度颜色：</el-text>
           <el-color-picker
-            v-model="scaleHighlightColor"
-            @change="$emit('update:scaleHighlightColor', scaleHighlightColor)"
+            :model-value="scaleHighlightColor"
+            @update:model-value="$emit('update:scaleHighlightColor', $event)"
             size="small"
             show-alpha
           />
@@ -129,8 +129,8 @@
         <div class="switch-item">
           <el-text>显示/隐藏：</el-text>
           <el-switch
-            v-model="isShowTianxinCross"
-            @change="$emit('update:isShowTianxinCross', isShowTianxinCross)"
+            :model-value="isShowTianxinCross"
+            @update:model-value="$emit('update:isShowTianxinCross', $event)"
           />
         </div>
       </div>
@@ -138,8 +138,21 @@
         <el-text class="sub-title">主题选择</el-text>
         <div class="themes-container">
           <div class="theme-cards">
-            <div v-for="theme in themes" :key="theme.name" class="theme-card" :class="{ active: currentTheme === theme.name }" @click="applyTheme(theme.data, theme.name)">
-              <div class="theme-preview" :style="{ backgroundImage: `url(${theme.preview})`, backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
+            <div
+              v-for="theme in themes"
+              :key="theme.name"
+              class="theme-card"
+              :class="{ active: currentTheme === theme.name }"
+              @click="applyTheme(theme.data, theme.name)"
+            >
+              <div
+                class="theme-preview"
+                :style="{
+                  backgroundImage: `url(${theme.preview})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }"
+              ></div>
               <h3>{{ theme.name }}</h3>
             </div>
           </div>
@@ -204,14 +217,10 @@
 <script setup>
 import { ref } from "vue";
 import { VAceEditor } from "vue3-ace-editor";
-import { ArrowRight, ArrowLeft } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import defaultTheme from "../themes/theme-crice.js";
-import compassTheme from "../themes/theme-compass.js";
+import themeData from "../themes/index.js";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
-import darkTheme from "../themes/theme-dark.js";
-import polygonTheme from "../themes/theme-polygon.js";
 
 const props = defineProps({
   compassData: {
@@ -240,42 +249,57 @@ const props = defineProps({
   },
   borderColor: {
     type: String,
-    default: '#DDDDDD',
+    default: "#DDDDDD",
   },
   scaleColor: {
     type: String,
-    default: '#DDDDDD',
+    default: "#DDDDDD",
   },
   scaleHighlightColor: {
     type: String,
-    default: '#DDDDDD',
+    default: "#DDDDDD",
   },
 });
 
 const emit = defineEmits([
-  'update:rotate',
-  'update:compassSize',
-  'update:layerFilt',
-  'update:latticeFill',
-  'update:isShowTianxinCross',
-  'update:borderColor',
-  'update:scaleColor',
-  'update:scaleHighlightColor',
+  "update:rotate",
+  "update:compassSize",
+  "update:layerFilt",
+  "update:latticeFill",
+  "update:isShowTianxinCross",
+  "update:borderColor",
+  "update:scaleColor",
+  "update:scaleHighlightColor",
 ]);
-
-// 注册图标组件
-const components = {
-  ArrowRight,
-  ArrowLeft,
-};
 
 const showFullscreenEditor = ref(false);
 const isPanelExpanded = ref(true);
-const themes = ref([{ name: "默认主题", data: defaultTheme, preview: new URL('../themes/theme-crice-preview.png', import.meta.url).href }, { name: "罗盘主题", data: compassTheme, preview: new URL('../themes/theme-compass-preview.png', import.meta.url).href }, { name: "暗夜主题", data: darkTheme, preview: new URL('../themes/theme-dark-preview.png', import.meta.url).href }, { name: "棱形主题", data: polygonTheme, preview: new URL('../themes/theme-polygon-preview.png', import.meta.url).href }]);
+const themes = ref(
+  [
+    themeData.compassTheme,
+    themeData.defaultTheme,
+    themeData.darkTheme,
+    themeData.polygonTheme,
+  ].map((theme) => ({
+    name: theme.info.name,
+    data: theme,
+    preview: new URL(`../themes/${theme.info.preview}`, import.meta.url).href,
+  }))
+);
 const currentTheme = ref(themes.value[0].name);
 
 function applyTheme(themeData, themeName) {
-  editorContent.value = JSON.stringify(themeData, null, 2);
+  // 更新编辑器内容为主题的data部分
+  editorContent.value = JSON.stringify(themeData.data, null, 2);
+  // 更新其他主题相关的属性
+  emit("update:rotate", themeData.rotate);
+  emit("update:compassSize", themeData.compassSize);
+  emit("update:layerFilt", themeData.layerFilt);
+  emit("update:latticeFill", themeData.latticeFill);
+  emit("update:isShowTianxinCross", themeData.isShowTianxinCross);
+  emit("update:borderColor", themeData.line.borderColor);
+  emit("update:scaleColor", themeData.line.scaleColor);
+  emit("update:scaleHighlightColor", themeData.line.scaleHighlightColor);
   updateCompassData();
   currentTheme.value = themeName;
   ElMessage.success("主题应用成功");
@@ -346,13 +370,21 @@ function changeLatticeTextColorFill() {
   );
 
   if (existingIndex === -1) {
-    newLatticeFill.push([latticeIndex, layerIndex, undefined, selectLatticeTextColor.value]);
+    newLatticeFill.push([
+      latticeIndex,
+      layerIndex,
+      undefined,
+      selectLatticeTextColor.value,
+    ]);
   } else {
     newLatticeFill[existingIndex][3] = selectLatticeTextColor.value;
   }
 
   // 更新数据源中对应宫格的textColor属性
-  if (props.compassData[layerIndex] && props.compassData[layerIndex].data[latticeIndex]) {
+  if (
+    props.compassData[layerIndex] &&
+    props.compassData[layerIndex].data[latticeIndex]
+  ) {
     props.compassData[layerIndex].textColor = selectLatticeTextColor.value;
   }
 
@@ -362,11 +394,6 @@ function changeLatticeTextColorFill() {
 function updateLayerLatticeIndex(event) {
   selectLayer.value = event.layerIndex;
   selectLattice.value = event.latticeIndex;
-}
-
-function openEditor() {
-  editorContent.value = JSON.stringify(props.compassData, null, 2);
-  showEditor.value = true;
 }
 
 function updateCompassData() {
@@ -405,10 +432,9 @@ defineExpose({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .control {
   margin-left: -6px;
-  /* background-color: rgb(0, 0, 0); */
   background: #232323;
   color: white;
   padding: 20px;
@@ -433,7 +459,6 @@ defineExpose({
 .control-content {
   height: 100%;
   overflow-y: auto;
-  /* 隐藏滑动条 */
   scrollbar-width: none;
 }
 
@@ -590,7 +615,7 @@ defineExpose({
 
 .theme-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   border-color: #409eff;
 }
 

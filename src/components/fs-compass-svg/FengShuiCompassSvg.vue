@@ -149,12 +149,6 @@ import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 
 const emit = defineEmits(['latticeClick', 'update:rotate']);
 
-// 监听compassData变化
-watch(() => props.compassData, () => {
-  // 清理缓存
-  cachedResults.clear();
-}, { deep: true });
-
 const CORRECTION_ANGLE = -90;
 const TOGERTHER_STYLE_EQUALLY = 'equally';
 
@@ -221,6 +215,12 @@ const props = defineProps({
     default: 2
   }
 });
+
+// 监听compassData变化
+watch(() => props.compassData, () => {
+  // 清理缓存
+  cachedResults.clear();
+}, { deep: true });
 
 // 计算中心点
 const centerPoint = computed(() => ({
