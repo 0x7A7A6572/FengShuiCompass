@@ -250,10 +250,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  layerFilt: {
-    type: Array,
-    default: () => [],
-  },
   latticeFill: {
     type: Array,
     default: () => [],
@@ -279,7 +275,6 @@ const props = defineProps({
 const emit = defineEmits([
   "update:rotate",
   "update:compassSize",
-  "update:layerFilt",
   "update:latticeFill",
   "update:isShowTianxinCross",
   "update:borderColor",
@@ -309,7 +304,6 @@ function applyTheme(themeData, themeName) {
   // 更新其他主题相关的属性
   emit("update:rotate", themeData.rotate);
   emit("update:compassSize", themeData.compassSize);
-  emit("update:layerFilt", themeData.layerFilt);
   emit("update:latticeFill", themeData.latticeFill);
   emit("update:isShowTianxinCross", themeData.isShowTianxinCross);
   emit("update:borderColor", themeData.line.borderColor);

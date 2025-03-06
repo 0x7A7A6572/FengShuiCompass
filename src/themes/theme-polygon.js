@@ -1,15 +1,15 @@
 export default {
   info: {
     id: 4,
-    name: "theme-polygon",
+    name: "四",
     preview: "theme-polygon-preview.png",
   },
-  rotate: 0,
+  rotate: 337.5,
   compassSize: {
     width: 800,
     height: 800,
   },
-  layerFilt: [],
+  // layerFilt: [],
   latticeFill: [],
   scaclStyle: {
     minLineHeight: 10,
@@ -26,7 +26,6 @@ export default {
     {
       name: "--",
       startAngle: 45,
-      fontSize: 78,
       textColor: "white",
       vertical: false,
       togetherStyle: "empty",
@@ -45,7 +44,6 @@ export default {
     {
       name: "--",
       startAngle: 0,
-      fontSize: 78,
       textColor: "white",
       vertical: false,
       togetherStyle: "empty",
@@ -83,6 +81,7 @@ export default {
     {
       name: "九星",
       startAngle: 0,
+      fontSize: 32,
       textColor: "white",
       shape: "circle",
       data: ["贪", "巨", "禄", "文", "武", "廉", "破", "辅", "弼"],

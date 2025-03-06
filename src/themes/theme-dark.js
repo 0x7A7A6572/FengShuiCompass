@@ -1,7 +1,7 @@
 export default {
   info: {
     id: 3,
-    name: "theme-dark",
+    name: "三",
     preview: "theme-dark-preview.png",
   },
   rotate: 0,
@@ -9,8 +9,7 @@ export default {
     width: 800,
     height: 800,
   },
-  layerFilt: [
-  ],
+  // layerFilt: [],
   latticeFill: [],
   scaclStyle: {
     minLineHeight: 10,

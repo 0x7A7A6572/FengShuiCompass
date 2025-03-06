@@ -1,4 +1,4 @@
-# FengShuiCompass - 自定义罗盘
+## FengShuiCompass - 自定义罗盘
 自定义罗盘数据和样式，基本样式配置.
 分 canvas 版本 和 svg 版本
 
@@ -6,7 +6,9 @@
 
 <!-- ![ui1](doc/ui1.png) -->
 ![ui1](doc/svgu1.png)
-# 开始
+![ui1](doc/ui1.png)
+
+## 开始
 概念：
 
  层：一圈的数据为层，下标从0开始。
@@ -18,44 +20,44 @@
 
 ### 基础配置
 
-| 参数名 | 类型 | 默认值 | 说明 |
-|--------|------|--------|------|
-| rotate | Number | 0 | 罗盘旋转角度 |
-| width | Number | 800 | 罗盘宽度 |
-| height | Number | 800 | 罗盘高度 |
-| layerFilt | Array | [] | 层填充配置数组 |
-| latticeFill | Array | [] | 宫格填充配置数组 |
-| scaclStyle | Object | {minLineHeight: 10, midLineHeight: 25, maxLineHeight: 25} | 刻度样式配置 |
-| borderColor | String | "#AAAAAA" | 罗盘边框颜色（支持v-model双向绑定） |
-| scaleColor | String | "#AAAAAA" | 刻度线颜色（支持v-model双向绑定） |
-| scaleHighlightColor | String | "#AAAAAA" | 高亮刻度线颜色（支持v-model双向绑定） |
-| isShowTianxinCross | Boolean | false | 是否显示天心十字 |
+| 参数名              | 类型    | 默认值                                                    | 说明                                  |
+| ------------------- | ------- | --------------------------------------------------------- | ------------------------------------- |
+| rotate              | Number  | 0                                                         | 罗盘旋转角度                          |
+| width               | Number  | 800                                                       | 罗盘宽度                              |
+| height              | Number  | 800                                                       | 罗盘高度                              |
+| ~~layerFilt~~       | Array[] | []                                                        | 层填充配置数组（svg版已弃用）         |
+| latticeFill         | Array[] | [ [ 0, 3,"red" ] ]                                        | 宫格填充配置数组[宫，层，颜色]        |
+| scaclStyle          | Object  | {minLineHeight: 10, midLineHeight: 25, maxLineHeight: 25} | 刻度样式配置                          |
+| borderColor         | String  | "#AAAAAA"                                                 | 罗盘边框颜色（支持v-model双向绑定）   |
+| scaleColor          | String  | "#AAAAAA"                                                 | 刻度线颜色（支持v-model双向绑定）     |
+| scaleHighlightColor | String  | "#AAAAAA"                                                 | 高亮刻度线颜色（支持v-model双向绑定） |
+| isShowTianxinCross  | Boolean | false                                                     | 是否显示天心十字                      |
 
 ### 层配置参数
 
-| 参数名 | 类型 | 默认值 | 必填 | 说明 |
-|--------|------|--------|------|------|
-| name | String/Array | - | 否 | 层名称。当为数组时可配置多个名称 |
-| startAngle | Number | 0 | 否 | 起始角度，范围 0-360 |
-| fontSize | Number | - | 否 | 字体大小(推荐开启autoFontSize) |
-| textColor | String/Array | '#000' | 否 | 字体颜色。当为数组时可配置多个颜色 |
-| vertical | Boolean | false | 否 | 是否垂直显示文字 |
-| data | Array | - | 是 | 层数据，支持一维数组和二维数组 |
-| togetherStyle | String | 'empty' | 否 | 统一风格，见下方说明 |
-| shape | String | 'circle' | 否 | 层形状，可选值：'circle'(圆形)、'polygon'(多边形)，如果使用多边形建议保持边数量一致，如果混用多边形和圆形，建议圆形在外，多边形在内 |
+| 参数名        | 类型         | 默认值   | 必填 | 说明                                                                                                                                |
+| ------------- | ------------ | -------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| name          | String/Array | -        | 否   | 层名称。当为数组时可配置多个名称                                                                                                    |
+| startAngle    | Number       | 0        | 否   | 起始角度，范围 0-360                                                                                                                |
+| fontSize      | Number       | -        | 否   | 字体大小(推荐开启autoFontSize)                                                                                                      |
+| textColor     | String/Array | '#000'   | 否   | 字体颜色。当为数组时可配置多个颜色                                                                                                  |
+| vertical      | Boolean      | false    | 否   | 是否垂直显示文字                                                                                                                    |
+| data          | Array        | -        | 是   | 层数据，支持一维数组和二维数组                                                                                                      |
+| togetherStyle | String       | 'empty'  | 否   | 统一风格，见下方说明                                                                                                                |
+| shape         | String       | 'circle' | 否   | 层形状，可选值：'circle'(圆形)、'polygon'(多边形)，如果使用多边形建议保持边数量一致，如果混用多边形和圆形，建议圆形在外，多边形在内 |
 
 ### togetherStyle 可选值
 
-| 值 | 说明 |
-|--------|------|
-| empty | 默认样式，常规显示 |
-| equally | 平分宫格样式 |
+| 值      | 说明               |
+| ------- | ------------------ |
+| empty   | 默认样式，常规显示 |
+| equally | 平分宫格样式       |
 
 ### shape 可选值
 
-| 值 | 说明 |
-|--------|------|
-| circle | 默认样式，圆形层 |
+| 值      | 说明                                   |
+| ------- | -------------------------------------- |
+| circle  | 默认样式，圆形层                       |
 | polygon | 多边形层，根据宫格数量自动生成正多边形 |
 
 多边形示例：
@@ -103,21 +105,56 @@
 相比Canvas版本，SVG版本具有以下优势：
 1. 更好的缩放性能，不会失真
 2. 更容易实现交互效果
+3. 支持多边形罗盘
 
 ### 基本使用
 ```html
 <script setup>
 import FengShuiCompassSvg from "./components/fs-compass-svg/FengShuiCompassSvg.vue";
-import CompassData from "./data/compass-data.js";
 
-// 罗盘旋转角度
-let rotate = ref(0);
-// 罗盘数据
-let compassData = ref(CompassData);
-// 层填充数据
-let layerFilt = ref([]);
-// 宫格填充数据
-let latticeFill = ref([]);
+const compassProps = reactive({
+  rotate: 337.5,
+  compassSize: {
+    width: 800,
+    height: 800,
+  },
+  latticeFill: [
+    [0, 1, "rgba(255, 166, 0, 0.57)"],
+    // [0, 1, "#FF0000"],
+  ],
+  scaclStyle:{
+    minLineHeight: 10,
+    midLineHeight: 25,
+    maxLineHeight: 25,
+  },
+  line: {
+    borderColor: "#AAAAAA",
+    scaleColor: "#AAAAAA",
+    scaleHighlightColor: "#AAAAAA",
+  },
+  isShowTianxinCross: false,
+  data: [
+    {
+      name: "方位",
+      startAngle: 0,
+      fontSize: 32,
+      textColor: "#ffff00",
+      vertical: false,
+      togetherStyle: "empty",
+      data: ["北", "东北", "东", "东南", "南", "西南", "西", "西北"],
+    },
+    {
+      name: "刻度标记",
+      startAngle: 0,
+      fontSize: 18,
+      textColor: "#cccccc",
+      vertical: true,
+      togetherStyle: "empty",
+      data: [],
+    },
+  ],
+});
+
 
 // 处理宫格点击事件
 function handleLatticeClick(event) {
@@ -126,44 +163,43 @@ function handleLatticeClick(event) {
 </script>
 
 <template>
-  <FengShuiCompassSvg
-    :width="800"
-    :height="800"
-    :rotate="rotate"
-    :compassData="compassData"
-    :layerFill="layerFilt"
-    :latticeFill="latticeFill"
-    :borderColor="'#000'"
-    :scaleColor="'#000'"
-    :scaleHighlightColor="'red'"
-    :isShowTianxinCross="true"
-    :tianxinCrossColor="'red'"
-    :tianxinCrossWidth="2"
-    @latticeClick="handleLatticeClick"
-  />
+      <FengShuiCompassSvg
+        :width="compassProps.compassSize.width"
+        :height="compassProps.compassSize.height"
+        :rotate="compassProps.rotate"
+        :compassData="compassProps.data"
+        :latticeFill="compassProps.latticeFill"
+        :isShowTianxinCross="compassProps.isShowTianxinCross"
+        :scaclStyle="compassProps.scaclStyle"
+        :autoFontSize="compassProps.autoFontSize"
+        v-model:borderColor="compassProps.line.borderColor"
+        v-model:scaleColor="compassProps.line.scaleColor"
+        v-model:scaleHighlightColor="compassProps.line.scaleHighlightColor"
+        @latticeClick="handleLatticeClick"
+      ></FengShuiCompassSvg>
 </template>
 ```
 
 ### 组件属性
-| 属性名 | 类型 | 默认值 | 说明 |
-|--------|------|---------|------|
-| width | Number | - | 罗盘宽度 |
-| height | Number | - | 罗盘高度 |
-| rotate | Number | 0 | 罗盘旋转角度 |
-| compassData | Array | [] | 罗盘数据配置，格式同Canvas版本 |
-| layerFill | Array | [] | 层填充配置，支持颜色和渐变 |
-| latticeFill | Array | [] | 宫格填充配置 |
-| borderColor | String | '#000' | 罗盘边框颜色 |
-| scaleColor | String | '#000' | 刻度线颜色 |
-| scaleHighlightColor | String | 'red' | 高亮刻度线颜色 |
-| isShowTianxinCross | Boolean | true | 是否显示天心十字 |
-| tianxinCrossColor | String | 'red' | 天心十字颜色 |
-| tianxinCrossWidth | Number | 2 | 天心十字线宽 |
-| autoFontSize | Boolean | false | 是否自动计算字体大小 |
+| 属性名              | 类型    | 默认值 | 说明                           |
+| ------------------- | ------- | ------ | ------------------------------ |
+| width               | Number  | -      | 罗盘宽度                       |
+| height              | Number  | -      | 罗盘高度                       |
+| rotate              | Number  | 0      | 罗盘旋转角度                   |
+| compassData         | Array   | []     | 罗盘数据配置，格式同Canvas版本 |
+| layerFill           | Array   | []     | 层填充配置，支持颜色和渐变     |
+| latticeFill         | Array   | []     | 宫格填充配置                   |
+| borderColor         | String  | '#000' | 罗盘边框颜色                   |
+| scaleColor          | String  | '#000' | 刻度线颜色                     |
+| scaleHighlightColor | String  | 'red'  | 高亮刻度线颜色                 |
+| isShowTianxinCross  | Boolean | true   | 是否显示天心十字               |
+| tianxinCrossColor   | String  | 'red'  | 天心十字颜色                   |
+| tianxinCrossWidth   | Number  | 2      | 天心十字线宽                   |
+| autoFontSize        | Boolean | false  | 是否自动计算字体大小           |
 
 ### 事件
-| 事件名 | 参数 | 说明 |
-|--------|------|------|
+| 事件名       | 参数                       | 说明                               |
+| ------------ | -------------------------- | ---------------------------------- |
 | latticeClick | {layerIndex, latticeIndex} | 宫格点击事件，返回层索引和宫格索引 |
 
 ### 渐变填充示例
@@ -245,3 +281,7 @@ const fs = new FengShuiCompass();
     //添加罗盘数据
     .setCompassData(compassData) //必须在配置所有基本数据完成之后执行
     .draw(ctx); //draw 必须setCompassData完成之后执行 终止链式
+
+```
+## 其他
+欢迎 PR / ISSUE / 交流

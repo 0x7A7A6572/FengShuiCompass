@@ -1,7 +1,7 @@
 export default {
   info: {
     id: 2,
-    name: "theme-compass",
+    name: "一",
     preview: "theme-compass-preview.png",
   },
   rotate: 0,
@@ -10,8 +10,10 @@ export default {
     width: 800,
     height: 800,
   },
-  layerFilt: [],
-  latticeFill: [],
+  // layerFilt: [],
+  latticeFill: [
+    [0,3,"red"],
+  ],
   scaclStyle: {
     minLineHeight: 10,
     midLineHeight: 25,

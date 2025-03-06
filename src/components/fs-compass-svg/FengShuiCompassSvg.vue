@@ -34,11 +34,11 @@
           />
         </template>
         <!-- 层填充 -->
-        <path
+        <!-- <path
           v-if="hasLayerFill(layerIndex)"
           :d="getLayerPath(layerIndex)"
           :fill="getLayerFillColor(layerIndex)"
-        />
+        /> -->
 
         <!-- 宫格填充 -->
         <path
@@ -168,10 +168,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  layerFilt: {
-    type: Array,
-    default: () => []
-  },
+  // layerFilt: {
+  //   type: Array,
+  //   default: () => []
+  // },
   latticeFill: {
     type: Array,
     default: () => []
@@ -262,15 +262,15 @@ function rads(degrees) {
 }
 
 // 检查层填充
-function hasLayerFill(layerIndex) {
-  return props.layerFilt.some(fill => fill[0] === layerIndex);
-}
+// function hasLayerFill(layerIndex) {
+//   return props.layerFilt.some(fill => fill[0] === layerIndex);
+// }
 
 // 获取层填充颜色
-function getLayerFillColor(layerIndex) {
-  const fill = props.layerFilt.find(fill => fill[0] === layerIndex);
-  return fill ? fill[1] : 'none';
-}
+// function getLayerFillColor(layerIndex) {
+//   const fill = props.layerFilt.find(fill => fill[0] === layerIndex);
+//   return fill ? fill[1] : 'none';
+// }
 
 // 获取层路径
 // 缓存计算结果

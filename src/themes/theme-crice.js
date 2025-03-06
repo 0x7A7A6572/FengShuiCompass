@@ -1,17 +1,18 @@
 export default {
   info:{
     id: 1,
-    name: "theme-crice",
+    name: "二",
     preview: "theme-crice.png",
   },
-  rotate: 0,
+  rotate: 337.5,
   compassSize: {
     width: 800,
     height: 800,
   },
-  layerFilt:[
+  latticeFill: [
+    [0, 1, "rgba(255, 166, 0, 0.57)"],
+    // [0, 1, "#FF0000"],
   ],
-  latticeFill: [],
   scaclStyle:{
     minLineHeight: 10,
     midLineHeight: 25,
