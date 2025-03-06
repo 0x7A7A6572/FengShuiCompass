@@ -5,6 +5,7 @@ export default {
     preview: "theme-compass-preview.png",
   },
   rotate: 0,
+  autoFontSize: false,
   compassSize: {
     width: 800,
     height: 800,
@@ -26,7 +27,7 @@ export default {
     {
       name: "八数",
       startAngle: 0,
-      fontSize: 78,
+      fontSize: 18,
       textColor: "white",
       vertical: false,
       togetherStyle: "empty",

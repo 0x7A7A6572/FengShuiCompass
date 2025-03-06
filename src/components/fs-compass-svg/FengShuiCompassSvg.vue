@@ -49,7 +49,6 @@
           @click="handleLatticeClick(latticeIndex, layerIndex)"
           style="cursor: pointer;"
         />
-
         <!-- 层文字 -->
         <g v-for="(text, textIndex) in layer.data" :key="`text-${layerIndex}-${textIndex}`">
           <text
@@ -411,12 +410,22 @@ function getLatticePath(latticeIndex, layerIndex) {
 
 // 计算基础字体大小
 const baseFontSize = computed(() => {
-  if (!props.autoFontSize) return null;
   // 根据罗盘半径计算合适的字体大小
   // 取罗盘半径的1/20作为基准字体大小
   const baseFontSize = radius.value / 20;
   // 限制最小和最大字体大小
-  return Math.min(Math.max(baseFontSize, 12), 40);
+  if (props.autoFontSize || !isBoolean(props.autoFontSize)) return Math.min(Math.max(baseFontSize, 12), 40);
+  // 根据罗盘半径和每层高度计算合适的字体大小
+  const layerIndex = props.compassData.length - 1;
+  const layerData = props.compassData[layerIndex];
+  const count = layerData.data.length;
+  const singleAngle = 360 / count;
+  const arcLength = (2 * Math.PI * getLayerRadius(layerIndex + 1) * singleAngle) / 360;
+  // 取弧长的1/4作为最大字体大小
+  const maxFontSize = arcLength / 4;
+  // 如果用户设置了字体大小，则以用户设置的大小为基准，但不超过最大字体大小
+  const userFontSize = layerData.fontSize || radius.value / 20;
+  return Math.min(userFontSize, maxFontSize);
 });
 
 // 获取文字位置和变换

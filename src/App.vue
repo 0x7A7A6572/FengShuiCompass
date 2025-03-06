@@ -36,6 +36,7 @@ function handleCompassDataUpdate(newData) {
         :latticeFill="compassProps.latticeFill"
         :isShowTianxinCross="compassProps.isShowTianxinCross"
         :scaclStyle="compassProps.scaclStyle"
+        :autoFontSize="compassProps.autoFontSize"
         v-model:borderColor="compassProps.line.borderColor"
         v-model:scaleColor="compassProps.line.scaleColor"
         v-model:scaleHighlightColor="compassProps.line.scaleHighlightColor"

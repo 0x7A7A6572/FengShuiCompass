@@ -28,7 +28,6 @@ export default {
     {
       name: "圆规尺刻度",
       startAngle: 0,
-      fontSize: 24,
       textColor: "white",
       vertical: false,
       togetherStyle: "empty",
@@ -63,7 +62,7 @@ export default {
       textColor: "#cccccc",
       vertical: true,
       togetherStyle: "empty",
-      data: ["|", "|", "|", "|", "|", "|", "|", "|", "|", "|", "|", "|"],
+      data: [],
     },
   ],
 };

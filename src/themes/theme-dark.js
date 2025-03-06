@@ -9,7 +9,8 @@ export default {
     width: 800,
     height: 800,
   },
-  layerFilt: [],
+  layerFilt: [
+  ],
   latticeFill: [],
   scaclStyle: {
     minLineHeight: 10,
@@ -26,7 +27,6 @@ export default {
     {
       name: "八数",
       startAngle: 0,
-      fontSize: 78,
       textColor: "aqua",
       vertical: false,
       togetherStyle: "empty",
@@ -36,7 +36,7 @@ export default {
       name: ["后先天八卦", "先天八卦", "龙上八煞"],
       startAngle: 0,
       fontSize: 18,
-      textColor: ["aqua", "aqua", "aqua"],
+      textColor: ["aqua", "red", "aqua"],
       vertical: false,
       togetherStyle: "equally",
       data: [
