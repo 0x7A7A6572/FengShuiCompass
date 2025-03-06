@@ -16,13 +16,28 @@
 ## compassData - 配置
 内部预置了一个基本数据样式，compassData 的数据格式为数组，每个元素代表一层的配置对象。格式：`[{层0配置}, {层1配置}, ...]`
 
+### 基础配置
+
+| 参数名 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| rotate | Number | 0 | 罗盘旋转角度 |
+| width | Number | 800 | 罗盘宽度 |
+| height | Number | 800 | 罗盘高度 |
+| layerFilt | Array | [] | 层填充配置数组 |
+| latticeFill | Array | [] | 宫格填充配置数组 |
+| scaclStyle | Object | {minLineHeight: 10, midLineHeight: 25, maxLineHeight: 25} | 刻度样式配置 |
+| borderColor | String | "#AAAAAA" | 罗盘边框颜色（支持v-model双向绑定） |
+| scaleColor | String | "#AAAAAA" | 刻度线颜色（支持v-model双向绑定） |
+| scaleHighlightColor | String | "#AAAAAA" | 高亮刻度线颜色（支持v-model双向绑定） |
+| isShowTianxinCross | Boolean | false | 是否显示天心十字 |
+
 ### 层配置参数
 
 | 参数名 | 类型 | 默认值 | 必填 | 说明 |
 |--------|------|--------|------|------|
-| name | String/Array | - | 是 | 层名称。当为数组时可配置多个名称 |
+| name | String/Array | - | 否 | 层名称。当为数组时可配置多个名称 |
 | startAngle | Number | 0 | 否 | 起始角度，范围 0-360 |
-| fontSize | Number | 30 | 否 | 字体大小 |
+| fontSize | Number | - | 否 | 字体大小(推荐开启autoFontSize) |
 | textColor | String/Array | '#000' | 否 | 字体颜色。当为数组时可配置多个颜色 |
 | vertical | Boolean | false | 否 | 是否垂直显示文字 |
 | data | Array | - | 是 | 层数据，支持一维数组和二维数组 |
