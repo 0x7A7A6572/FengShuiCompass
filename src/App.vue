@@ -1,7 +1,7 @@
 <script setup>
-import FengShuiCompassSvg from "./components/fs-compass-svg/FengShuiCompassSvg.vue";
-import StarryBackground from "./components/StarryBackground.vue";
-import ControlPanel from "./components/ControlPanel.vue";
+import FengShuiCompassSvg from "./components/feng-shui-compass-svg/feng-shui-compass-svg.vue";
+import StarryBackground from "./components/starry-background.vue";
+import ControlPanel from "./components/control-panel.vue";
 import "element-plus/dist/index.css";
 import compassTheme from "./themes/theme-compass.js";
 
@@ -27,22 +27,9 @@ function handleConfigChange(config) {
     <div class="compass-container">
       <h3 class="compass-title">SVG-FengShuiCompass</h3>
       <FengShuiCompassSvg
-        :id="compassProps.info.id"
-        :width="compassProps.compassSize.width"
-        :height="compassProps.compassSize.height"
-        :rotate="compassProps.rotate"
-        :compassData="compassProps.data"
-        :latticeFill="compassProps.latticeFill"
-        :isShowTianxinCross="compassProps.isShowTianxinCross"
-        :isShowScale="compassProps.isShowScale"
-        :scaclStyle="compassProps.scaclStyle"
-        :autoFontSize="compassProps.autoFontSize"
-        :animation="compassProps.animation"
-        v-model:borderColor="compassProps.line.borderColor"
-        v-model:scaleColor="compassProps.line.scaleColor"
-        v-model:scaleHighlightColor="compassProps.line.scaleHighlightColor"
+        :config="compassProps"
         @latticeClick="handleLatticeClick"
-      ></FengShuiCompassSvg>
+      />
     </div>
     <ControlPanel
       ref="refControlPanel"
