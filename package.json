@@ -1,10 +1,22 @@
 {
-  "name": "fengshuicompass",
-  "private": true,
-  "version": "0.0.0",
+  "name": "feng-shui-compass",
+  "version": "2.1.0",
+  "description": "A Vue 3 component for rendering Feng Shui compass",
+  "author": "gemc",
+  "license": "MIT",
+  "keywords": ["vue", "component", "feng-shui", "compass"],
+  "main": "dist/feng-shui-compass.umd.js",
+  "module": "dist/feng-shui-compass.es.js",
+  "types": "dist/types/index.d.ts",
+  "files": ["dist"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0x7A7A6572/FengShuiCompass.gitt"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:lib": "vite build --config vite.lib.config.js",
     "preview": "vite preview"
   },
   "dependencies": {
