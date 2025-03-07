@@ -98,7 +98,7 @@
       </g>
 
       <!-- 刻度 -->
-      <g v-if="scaclStyle">
+      <g v-if="scaclStyle && isShowScale">
         <g v-for="i in 360" :key="`scale-${i}`">
           <line
             :x1="getScaleStartX(i)"
@@ -152,6 +152,10 @@ const CORRECTION_ANGLE = -90;
 const TOGERTHER_STYLE_EQUALLY = 'equally';
 
 const props = defineProps({
+  isShowScale: {
+    type: Boolean,
+    default: true
+  },
   width: {
     type: Number,
     default: 500
@@ -219,6 +223,13 @@ const props = defineProps({
 watch(() => props.compassData, () => {
   // 清理缓存
   cachedResults.clear();
+  // 检查多边形模式下的startAngle设置
+  props.compassData.forEach((layer, index) => {
+    if (layer.shape === 'polygon' && layer.startAngle) {
+      console.warn(`警告: 第${index + 1}层使用了多边形模式，多边形模式不支持startAngle设置。`);
+      layer.startAngle = 0;
+    }
+  });
 }, { deep: true });
 
 // 计算中心点
@@ -431,7 +442,7 @@ const baseFontSize = computed(() => {
 // 获取文字位置和变换
 function getTextPosition(layerIndex, textIndex, layer) {
   const count = layer.data.length;
-  const angle = rads((360 / count) * textIndex + (360 / count) / 2);
+  const angle = rads((360 / count) * textIndex + (360 / count) / 2 + (layer.startAngle || 0));
   const r = getLayerRadius(layerIndex) + layerHeight.value[layerIndex] / 2;
   
   return {
@@ -455,12 +466,11 @@ function getTextTransform(layerIndex, textIndex, layer) {
   const extraRotation = layer.vertical ? (pos.angle > 90 && pos.angle < 270 ? 270 : 90) : 0;
   return `rotate(${pos.angle + extraRotation} ${pos.x} ${pos.y})`;
 }
-
 // 获取同宫文字位置和变换
 function getTogetherTextPosition(layerIndex, textIndex, subIndex, layer) {
   const count = layer.data.length; // 宫格数量
   const singleAngle = 360 / count; // 每个宫格的角度
-  const baseAngle = singleAngle * textIndex; // 当前宫格的起始角度
+  const baseAngle = singleAngle * textIndex + (layer.startAngle || 0); // 当前宫格的起始角度
   
   // 获取当前宫格内的文字数量
   const currentLatticeTexts = layer.data[textIndex];
@@ -499,7 +509,7 @@ function getLayerBorderPath(layerIndex) {
   const sides = layer.data.length;
   const radius = getLayerRadius(layerIndex + 1);
   let path = [];
-  
+
   // 检查当前层是否为多边形
   if (layer.shape !== 'circle' && layer.shape) {
     // 检查上一层是否为圆形（如果存在）
@@ -515,7 +525,7 @@ function getLayerBorderPath(layerIndex) {
       const angle = (i * 2 * Math.PI) / sides;
       const x = centerPoint.value.x + radius * Math.cos(angle);
       const y = centerPoint.value.y + radius * Math.sin(angle);
-      
+    
       if (i === 0) {
         path.push(`M ${x} ${y}`);
       } else {
@@ -553,7 +563,7 @@ function getLayerBorderPath(layerIndex) {
 function getDividerPosition(layerIndex, index) {
   const layer = props.compassData[layerIndex];
   const count = layer.data.length;
-  const angle = rads((360 / count) * index);
+  const angle = rads((360 / count) * index + (layer.startAngle || 0));
   const innerRadius = getLayerRadius(layerIndex);
   const outerRadius = getLayerRadius(layerIndex + 1);
 

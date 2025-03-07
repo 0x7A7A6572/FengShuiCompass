@@ -24,7 +24,7 @@ function handleCompassDataUpdate(newData) {
 
 <template>
   <StarryBackground />
-  <div class="gemc-layout">
+  <div class="gemc-layout dark" >
     <div class="compass-container">
       <h3 class="compass-title">SVG-FengShuiCompass</h3>
       <FengShuiCompassSvg
@@ -34,6 +34,7 @@ function handleCompassDataUpdate(newData) {
         :compassData="compassProps.data"
         :latticeFill="compassProps.latticeFill"
         :isShowTianxinCross="compassProps.isShowTianxinCross"
+        :isShowScale="compassProps.isShowScale"
         :scaclStyle="compassProps.scaclStyle"
         :autoFontSize="compassProps.autoFontSize"
         v-model:borderColor="compassProps.line.borderColor"
@@ -49,6 +50,7 @@ function handleCompassDataUpdate(newData) {
       v-model:latticeFill="compassProps.latticeFill"
       v-model:compassSize="compassProps.compassSize"
       v-model:isShowTianxinCross="compassProps.isShowTianxinCross"
+      v-model:isShowScale="compassProps.isShowScale"
       v-model:borderColor="compassProps.line.borderColor"
       v-model:scaleColor="compassProps.line.scaleColor"
       v-model:scaleHighlightColor="compassProps.line.scaleHighlightColor"

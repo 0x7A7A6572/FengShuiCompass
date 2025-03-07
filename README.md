@@ -32,13 +32,14 @@
 | scaleColor          | String  | "#AAAAAA"                                                 | 刻度线颜色（支持v-model双向绑定）     |
 | scaleHighlightColor | String  | "#AAAAAA"                                                 | 高亮刻度线颜色（支持v-model双向绑定） |
 | isShowTianxinCross  | Boolean | false                                                     | 是否显示天心十字                      |
+| isShowScale         | Boolean | true                                                      | 是否显示刻度                          |
 
 ### 层配置参数
 
 | 参数名        | 类型         | 默认值   | 必填 | 说明                                                                                                                                |
 | ------------- | ------------ | -------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | name          | String/Array | -        | 否   | 层名称。当为数组时可配置多个名称                                                                                                    |
-| startAngle    | Number       | 0        | 否   | 起始角度，范围 0-360                                                                                                                |
+| startAngle    | Number       | 0        | 否   | 起始角度，范围 0-360 （只有圆形层支持）                                                                                                               |
 | fontSize      | Number       | -        | 否   | 字体大小(推荐开启autoFontSize)                                                                                                      |
 | textColor     | String/Array | '#000'   | 否   | 字体颜色。当为数组时可配置多个颜色                                                                                                  |
 | vertical      | Boolean      | false    | 否   | 是否垂直显示文字                                                                                                                    |
@@ -193,6 +194,7 @@ function handleLatticeClick(event) {
 | scaleColor          | String  | '#000' | 刻度线颜色                     |
 | scaleHighlightColor | String  | 'red'  | 高亮刻度线颜色                 |
 | isShowTianxinCross  | Boolean | true   | 是否显示天心十字               |
+| isShowScale         | Boolean | true   | 是否显示刻度                   |
 | tianxinCrossColor   | String  | 'red'  | 天心十字颜色                   |
 | tianxinCrossWidth   | Number  | 2      | 天心十字线宽                   |
 | autoFontSize        | Boolean | false  | 是否自动计算字体大小           |
