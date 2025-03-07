@@ -111,6 +111,13 @@
       </div>
       <div class="control-section">
         <el-text class="sub-title">罗盘边框与刻度</el-text>
+        <div class="switch-item">
+          <el-text>显示刻度：</el-text>
+          <el-switch
+            :model-value="isShowScale"
+            @update:model-value="$emit('update:isShowScale', $event)"
+          />
+        </div>
         <div class="color-select">
           <el-text>边框颜色：</el-text>
           <el-color-picker
@@ -270,6 +277,10 @@ const props = defineProps({
     type: String,
     default: "#DDDDDD",
   },
+  isShowScale: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emit = defineEmits([
@@ -280,6 +291,7 @@ const emit = defineEmits([
   "update:borderColor",
   "update:scaleColor",
   "update:scaleHighlightColor",
+  "update:isShowScale",
 ]);
 
 const showFullscreenEditor = ref(false);

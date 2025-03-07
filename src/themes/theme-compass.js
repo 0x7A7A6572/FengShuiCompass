@@ -6,6 +6,7 @@ export default {
   },
   rotate: 0,
   autoFontSize: false,
+  isShowScale: true,
   compassSize: {
     width: 800,
     height: 800,

@@ -98,7 +98,7 @@
       </g>
 
       <!-- 刻度 -->
-      <g v-if="scaclStyle">
+      <g v-if="scaclStyle && isShowScale">
         <g v-for="i in 360" :key="`scale-${i}`">
           <line
             :x1="getScaleStartX(i)"
@@ -152,6 +152,10 @@ const CORRECTION_ANGLE = -90;
 const TOGERTHER_STYLE_EQUALLY = 'equally';
 
 const props = defineProps({
+  isShowScale: {
+    type: Boolean,
+    default: true
+  },
   width: {
     type: Number,
     default: 500
