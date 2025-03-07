@@ -5,7 +5,7 @@ export default {
     preview: "theme-compass-preview.png",
   },
   animation: {
-    enable: false,
+    enable: true,
     duration: 1000,
     delay: 100
   },

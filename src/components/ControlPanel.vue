@@ -1,65 +1,41 @@
 <template>
   <div class="control" :class="{ collapsed: !isPanelExpanded }">
-    <el-button
-      class="toggle-panel"
-      @click="isPanelExpanded = !isPanelExpanded"
-      :icon="isPanelExpanded ? 'ArrowRight' : 'ArrowLeft'"
-    />
+    <el-button class="toggle-panel" @click="isPanelExpanded = !isPanelExpanded"
+      :icon="isPanelExpanded ? 'ArrowRight' : 'ArrowLeft'" />
     <div direction="vertical" fill class="control-content">
       <div class="flex-center">
-          <el-button
-            type="primary"
-            link
-            href="https://github.com/yourusername/FengShuiCompass"
-            target="_blank"
-          >
-            <template #icon>
-              <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-              </svg>
-            </template>
-            GitHub
-          </el-button>
-        </div>
+        <el-button type="primary" link href="https://github.com/yourusername/FengShuiCompass" target="_blank">
+          <template #icon>
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+              <path
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+          </template>
+          GitHub
+        </el-button>
+      </div>
       <div class="control-section">
         <el-text class="sub-title">旋转罗盘</el-text>
         <div class="flex-center">
           <el-text>角度：</el-text>
-          <el-slider
-            :model-value="rotate"
-            @update:model-value="$emit('update:rotate', $event)"
-            :min="0"
-            :max="360"
-            :step="1"
-          />
+          <el-slider v-model="currentTheme.rotate" :min="0" :max="360" :step="1"
+            @update:model-value="handleRotateChange" />
         </div>
       </div>
       <div class="control-section">
         <el-text class="sub-title">罗盘大小</el-text>
         <div class="flex-center">
           <el-text>宽度：</el-text>
-          <el-slider
-            v-model="compassSize.width"
-            :min="400"
-            :max="1600"
-            :step="100"
-            show-stops
-            @input="updateCompassSize"
-          >
-            <template #marker> {{ compassSize.width }}px </template>
+          <el-slider v-model="currentTheme.compassSize.width" :min="400" :max="1600" :step="100" show-stops
+            @input="handleConfigChange">
+            <template #marker> {{ currentTheme.compassSize.width }}px </template>
           </el-slider>
         </div>
         <div class="flex-center">
           <el-text>高度：</el-text>
-          <el-slider
-            v-model="compassSize.height"
-            :min="400"
-            :max="1600"
-            :step="100"
-            show-stops
-            @input="updateCompassSize"
-          >
-            <template #marker> {{ compassSize.height }}px </template>
+          <el-slider v-model="currentTheme.compassSize.height" :min="400" :max="1600" :step="100" show-stops
+            @input="handleConfigChange">
+            <template #marker> {{ currentTheme.compassSize.height }}px </template>
           </el-slider>
         </div>
       </div>
@@ -68,114 +44,63 @@
         <div class="color-select">
           <el-text>层：</el-text>
           <el-select v-model="selectLayer" size="small">
-            <el-option
-              v-for="(item, index) in compassData"
-              :key="index"
-              :label="index"
-              :value="index"
-            />
+            <el-option v-for="(item, index) in currentTheme.data" :key="index" :label="index" :value="index" />
           </el-select>
-          <el-color-picker
-            v-model="selectLayerColor"
-            @change="changeLayerFilt"
-            size="small"
-            show-alpha
-          />
+          <el-color-picker v-model="selectLayerColor" @change="changeLayerFilt" size="small" show-alpha />
         </div>
         <div class="color-select">
           <el-text>宫：</el-text>
           <el-select v-model="selectLattice" size="small">
-            <el-option
-             dark
-              v-for="(item, index) in getDataByIndex()"
-              :key="index"
-              :label="index"
-              :value="index"
-            />
+            <el-option dark v-for="(item, index) in getDataByIndex()" :key="index" :label="index" :value="index" />
           </el-select>
-          <el-color-picker
-            v-model="selectLatticeColor"
-            @change="changeLatticeFill"
-            size="small"
-            show-alpha
-          />
+          <el-color-picker v-model="selectLatticeColor" @change="changeLatticeFill" size="small" show-alpha />
         </div>
         <div class="color-select">
           <el-text>文字颜色：</el-text>
-          <el-color-picker
-            v-model="selectLatticeTextColor"
-            @change="changeLatticeTextColorFill"
-            size="small"
-            show-alpha
-          />
+          <el-color-picker v-model="selectLatticeTextColor" @change="changeLatticeTextColorFill" size="small"
+            show-alpha />
         </div>
       </div>
       <div class="control-section">
         <el-text class="sub-title">罗盘边框与刻度</el-text>
         <div class="switch-item">
           <el-text>显示刻度：</el-text>
-          <el-switch
-            :model-value="isShowScale"
-            @update:model-value="$emit('update:isShowScale', $event)"
-          />
+          <el-switch v-model="currentTheme.isShowScale" @update:model-value="handleConfigChange" />
         </div>
         <div class="color-select">
           <el-text>边框颜色：</el-text>
-          <el-color-picker
-            :model-value="borderColor"
-            @update:model-value="$emit('update:borderColor', $event)"
-            size="small"
-            show-alpha
-          />
+          <el-color-picker v-model="currentTheme.line.borderColor" @change="handleConfigChange" size="small"
+            show-alpha />
         </div>
         <div class="color-select">
           <el-text>刻度颜色：</el-text>
-          <el-color-picker
-            :model-value="scaleColor"
-            @update:model-value="$emit('update:scaleColor', $event)"
-            size="small"
-            show-alpha
-          />
+          <el-color-picker v-model="currentTheme.line.scaleColor" @change="handleConfigChange" size="small"
+            show-alpha />
         </div>
         <div class="color-select">
           <el-text>高亮刻度颜色：</el-text>
-          <el-color-picker
-            :model-value="scaleHighlightColor"
-            @update:model-value="$emit('update:scaleHighlightColor', $event)"
-            size="small"
-            show-alpha
-          />
+          <el-color-picker v-model="currentTheme.line.scaleHighlightColor" @change="handleConfigChange" size="small"
+            show-alpha />
         </div>
       </div>
       <div class="control-section">
         <el-text class="sub-title">天心十字</el-text>
         <div class="switch-item">
           <el-text>显示/隐藏：</el-text>
-          <el-switch
-            :model-value="isShowTianxinCross"
-            @update:model-value="$emit('update:isShowTianxinCross', $event)"
-          />
+          <el-switch v-model="currentTheme.isShowTianxinCross" @update:model-value="handleConfigChange" />
         </div>
       </div>
       <div class="control-section">
         <el-text class="sub-title">主题选择</el-text>
         <div class="themes-container">
           <div class="theme-cards">
-            <div
-              v-for="theme in themes"
-              :key="theme.name"
-              class="theme-card"
-              :class="{ active: currentTheme === theme.name }"
-              @click="applyTheme(theme.data, theme.name)"
-            >
-              <div
-                class="theme-preview"
-                :style="{
-                  backgroundImage: `url(${theme.preview})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }"
-              ></div>
+            <div v-for="theme in themes" :key="theme.id" class="theme-card"
+              :class="{ active: currentThemeId === theme.id }" @click="applyTheme(theme)">
+              <div class="theme-preview" :style="{
+                backgroundImage: `url(${theme.preview})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }"></div>
               <h3>{{ theme.name }}</h3>
             </div>
           </div>
@@ -185,47 +110,28 @@
         <el-text class="sub-title">罗盘渲染数据</el-text>
         <div class="flex-center" style="justify-content: end">
           <el-button @click="showFullscreenEditor = true" type="primary">
-            <el-icon><FullScreen /></el-icon>
+            <el-icon>
+              <FullScreen />
+            </el-icon>
           </el-button>
           <el-button type="primary" @click="updateCompassData">更新</el-button>
         </div>
 
-        <v-ace-editor
-          v-model:value="editorContent"
-          lang="json"
-          theme="monokai"
-          style="height: 30vh"
-          :options="{
-            fontSize: 14,
-            enableBasicAutocompletion: false,
-            enableLiveAutocompletion: false,
-            showPrintMargin: false,
-          }"
-        />
+        <v-ace-editor v-model:value="editorContent" lang="json" theme="monokai" style="height: 30vh" :options="{
+          fontSize: 14,
+          showPrintMargin: false,
+        }" />
       </div>
       <el-divider />
     </div>
   </div>
-  <el-dialog
-    style="background: #272822; color: whit"
-    v-model="showFullscreenEditor"
-    title="罗盘数据编辑器"
-    fullscreen
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
-  >
-    <v-ace-editor
-      v-model:value="editorContent"
-      lang="json"
-      theme="monokai"
-      style="height: calc(100vh - 150px)"
+  <el-dialog style="background: #272822; color: whit" v-model="showFullscreenEditor" title="罗盘数据编辑器" fullscreen
+    :close-on-click-modal="false" :close-on-press-escape="false">
+    <v-ace-editor v-model:value="editorContent" lang="json" theme="monokai" style="height: calc(100vh - 150px)"
       :options="{
         fontSize: 14,
-        enableBasicAutocompletion: false,
-        enableLiveAutocompletion: false,
         showPrintMargin: false,
-      }"
-    />
+      }" />
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="showFullscreenEditor = false">取消</el-button>
@@ -246,60 +152,13 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
 
 const props = defineProps({
-  compassData: {
-    type: Array,
-    required: true,
-  },
-  rotate: {
-    type: Number,
-    default: 0,
-  },
-  compassSize: {
+  config: {
     type: Object,
-    required: true,
-  },
-  latticeFill: {
-    type: Array,
-    default: () => [],
-  },
-  isShowTianxinCross: {
-    type: Boolean,
-    default: true,
-  },
-  borderColor: {
-    type: String,
-    default: "#DDDDDD",
-  },
-  scaleColor: {
-    type: String,
-    default: "#DDDDDD",
-  },
-  scaleHighlightColor: {
-    type: String,
-    default: "#DDDDDD",
-  },
-  isShowScale: {
-    type: Boolean,
-    default: true,
-  },
-  id: {
-    type: [String, Number],
-    default: ''
+    required: true
   }
 });
 
-const emit = defineEmits([
-  "update:rotate",
-  "update:compassSize",
-  "update:latticeFill",
-  "update:isShowTianxinCross",
-  "update:borderColor",
-  "update:scaleColor",
-  "update:scaleHighlightColor",
-  "update:isShowScale",
-  "update:id",
-  "onConfigChange"
-]);
+const emit = defineEmits(['onConfigChange']);
 
 const showFullscreenEditor = ref(false);
 const isPanelExpanded = ref(true);
@@ -310,29 +169,27 @@ const themes = ref(
     themeData.darkTheme,
     themeData.polygonTheme,
   ].map((theme) => ({
+    id: theme.info.id,
     name: theme.info.name,
     data: theme,
     preview: new URL(`../themes/${theme.info.preview}`, import.meta.url).href,
   }))
 );
-const currentTheme = ref(themes.value[0].name);
+const currentTheme = ref(themes.value[0].data);
+const currentThemeId = ref(themes.value[0].id);
 
-function applyTheme(themeData, themeName) {
-  // 更新编辑器内容为主题themes的data部分
-  editorContent.value = JSON.stringify(themeData.data, null, 2);
-  // 更新其他主题相关的属性
-  emit("update:rotate", themeData.rotate);
-  emit("update:compassSize", themeData.compassSize);
-  emit("update:latticeFill", themeData.latticeFill);
-  emit("update:isShowTianxinCross", themeData.isShowTianxinCross);
-  emit("update:borderColor", themeData.line.borderColor);
-  emit("update:scaleColor", themeData.line.scaleColor);
-  emit("update:scaleHighlightColor", themeData.line.scaleHighlightColor);
-  if (themeData.info?.id) {
-    emit("update:id", themeData.info.id);
-  }
-  updateCompassData();
-  currentTheme.value = themeName;
+
+function applyTheme(themeData) {
+  editorContent.value = JSON.stringify(themeData.data.data, null, 2);
+
+  emit('onConfigChange', {
+    type: 'theme',
+    data: themeData.data
+  });
+
+  currentTheme.value = themeData.data;
+  currentThemeId.value = themeData.id;
+
   ElNotification.success({
     title: "主题应用",
     message: "主题应用成功"
@@ -343,26 +200,36 @@ const selectLayerColor = ref("#ff0000");
 const selectLattice = ref("");
 const selectLatticeColor = ref("#00ff00");
 const selectLatticeTextColor = ref("#ffffff");
-const showEditor = ref(true);
-const editorContent = ref(JSON.stringify(props.compassData, null, 2));
+const editorContent = ref(JSON.stringify(props.config.data, null, 2));
 
 function getDataByIndex() {
-  return props.compassData[parseInt(selectLayer.value)]?.data || [];
+  return props.config.data[parseInt(selectLayer.value)]?.data || [];
+}
+
+function handleConfigChange() {
+  emit('onConfigChange', {
+    type: 'theme',
+    data: currentTheme.value
+  });
+}
+
+function handleRotateChange(value) {
+  currentTheme.value.rotate = value;
+  handleConfigChange();
 }
 
 function updateCompassSize() {
-  emit("update:compassSize", {
-    width: props.compassSize.width,
-    height: props.compassSize.height,
+  emit('onConfigChange', {
+    type: 'theme',
+    data: currentTheme.value
   });
 }
 
 function changeLayerFilt() {
-  const newLatticeFill = [...props.latticeFill];
+  const newLatticeFill = [...props.config.latticeFill];
   const layerIndex = parseInt(selectLayer.value);
-  const layerData = props.compassData[layerIndex]?.data || [];
+  const layerData = props.config.data[layerIndex]?.data || [];
 
-  // 遍历当前层的所有宫格
   layerData.forEach((_, latticeIndex) => {
     const existingIndex = newLatticeFill.findIndex(
       (item) => item[0] === latticeIndex && item[1] === layerIndex
@@ -375,11 +242,17 @@ function changeLayerFilt() {
     }
   });
 
-  emit("update:latticeFill", newLatticeFill);
+  // 更新 currentTheme 中的 latticeFill
+  currentTheme.value.latticeFill = newLatticeFill;
+
+  emit('onConfigChange', {
+    type: 'theme',
+    data: currentTheme.value
+  });
 }
 
 function changeLatticeFill() {
-  const newLatticeFill = [...props.latticeFill];
+  const newLatticeFill = [...props.config.latticeFill];
   const latticeIndex = parseInt(selectLattice.value);
   const layerIndex = parseInt(selectLayer.value);
   const existingIndex = newLatticeFill.findIndex(
@@ -392,11 +265,17 @@ function changeLatticeFill() {
     newLatticeFill[existingIndex][2] = selectLatticeColor.value;
   }
 
-  emit("update:latticeFill", newLatticeFill);
+  // 更新 currentTheme 中的 latticeFill
+  currentTheme.value.latticeFill = newLatticeFill;
+
+  emit('onConfigChange', {
+    type: 'theme',
+    data: currentTheme.value
+  });
 }
 
 function changeLatticeTextColorFill() {
-  const newLatticeFill = [...props.latticeFill];
+  const newLatticeFill = [...props.config.latticeFill];
   const latticeIndex = parseInt(selectLattice.value);
   const layerIndex = parseInt(selectLayer.value);
   const existingIndex = newLatticeFill.findIndex(
@@ -416,13 +295,16 @@ function changeLatticeTextColorFill() {
 
   // 更新数据源中对应宫格的textColor属性
   if (
-    props.compassData[layerIndex] &&
-    props.compassData[layerIndex].data[latticeIndex]
+    props.config.data[layerIndex] &&
+    props.config.data[layerIndex].data[latticeIndex]
   ) {
-    props.compassData[layerIndex].textColor = selectLatticeTextColor.value;
+    props.config.data[layerIndex].textColor = selectLatticeTextColor.value;
   }
 
-  emit("update:latticeFill", newLatticeFill);
+  emit('onConfigChange', {
+    type: 'theme',
+    data: currentTheme.value
+  });
 }
 
 function updateLayerLatticeIndex(event) {
@@ -455,11 +337,10 @@ function updateCompassData() {
 
     if (!isValid) return;
 
-    emit("update:compassData", newData);
-    // ElNotification.success({
-    //   title: "罗盘数据更新",
-    //   message: "罗盘数据更新成功"
-    // });
+    emit('onConfigChange', {
+      type: 'theme',
+      data: currentTheme.value
+    });
   } catch (e) {
     ElNotification.error({
       title: "JSON解析错误",
@@ -512,7 +393,7 @@ defineExpose({
   width: 100%;
 }
 
-.control-section > div {
+.control-section>div {
   margin-top: 10px;
 }
 
@@ -550,6 +431,7 @@ defineExpose({
   width: 16px;
   height: 16px;
   transition: transform 0.2s;
+
   &:hover {
     transform: scale(1.2);
   }
@@ -583,6 +465,7 @@ defineExpose({
   margin-bottom: 12px;
   display: block;
 }
+
 .sub-title {
   font-size: 16px;
   font-weight: 600;
@@ -591,6 +474,7 @@ defineExpose({
   display: block;
   text-align: left;
 }
+
 .sub-title::before {
   content: "";
   display: block;
@@ -599,28 +483,34 @@ defineExpose({
   background-color: #2c4d57;
   margin-top: 10px;
 }
+
 .themes-container {
   width: 100%;
   overflow-x: auto;
   padding: 10px 0;
+
   /* 自定义滚动条样式 */
   &::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
+
   &::-webkit-scrollbar-track {
     background: #1e1e1e;
     border-radius: 4px;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #4a4a4a;
     border-radius: 4px;
     transition: background 0.3s ease;
   }
+
   &::-webkit-scrollbar-thumb:hover {
     background: #606060;
   }
 }
+
 .theme-cards {
   display: flex;
   gap: 16px;
@@ -679,6 +569,7 @@ defineExpose({
   background: #3c3c3c;
   border-radius: 4px;
 }
+
 :deep(.el-button:hover) {
   background-color: #595959;
   border-color: #707070;
@@ -698,12 +589,14 @@ defineExpose({
   background-color: #232323;
   border: none;
 }
+
 .flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
   white-space: nowrap;
 }
+
 .dialog-footer {
   padding: 20px 0;
   text-align: right;

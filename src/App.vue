@@ -7,24 +7,23 @@ import compassTheme from "./themes/theme-compass.js";
 
 import { ref, reactive } from "vue";
 
-const compassProps = reactive(JSON.parse(JSON.stringify(compassTheme)));
+const compassProps = ref(JSON.parse(JSON.stringify(compassTheme)));
 
 const refControlPanel = ref(null);
+
 function handleLatticeClick(event) {
-  console.log("宫格被点击：", event);
-  // 设置选中的层和宫
   refControlPanel.value.updateLayerLatticeIndex(event);
 }
 
-// 处理罗盘数据更新
-function handleCompassDataUpdate(newData) {
-  compassProps.data = newData;
+function handleConfigChange(config) {
+  // Object.assign(compassProps, config.data);
+  compassProps.value = config.data
 }
 </script>
 
 <template>
   <StarryBackground />
-  <div class="gemc-layout dark" >
+  <div class="gemc-layout dark">
     <div class="compass-container">
       <h3 class="compass-title">SVG-FengShuiCompass</h3>
       <FengShuiCompassSvg
@@ -47,17 +46,8 @@ function handleCompassDataUpdate(newData) {
     </div>
     <ControlPanel
       ref="refControlPanel"
-      :compassData="compassProps.data"
-      v-model:rotate="compassProps.rotate"
-      v-model:latticeFill="compassProps.latticeFill"
-      v-model:compassSize="compassProps.compassSize"
-      v-model:isShowTianxinCross="compassProps.isShowTianxinCross"
-      v-model:isShowScale="compassProps.isShowScale"
-      v-model:borderColor="compassProps.line.borderColor"
-      v-model:scaleColor="compassProps.line.scaleColor"
-      v-model:scaleHighlightColor="compassProps.line.scaleHighlightColor"
-      v-model:id="compassProps.info.id"
-      @update:compassData="handleCompassDataUpdate"
+      :config="compassProps"
+      @onConfigChange="handleConfigChange"
     />
   </div>
 </template>

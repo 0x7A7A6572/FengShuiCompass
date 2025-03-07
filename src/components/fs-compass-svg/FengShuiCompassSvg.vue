@@ -20,7 +20,7 @@
       />
 
       <!-- 各层圆环 -->
-      <g v-for="(layer, layerIndex) in compassData" :key="`${layerIndex}-${id || ''}`" :class="{ 'layer-animate': shouldEnableAnimation }" :style="{ animationDelay: shouldEnableAnimation ? `${layerIndex * props.animation.delay}ms` : '0s' }">
+      <g v-for="(layer, layerIndex) in compassData" :key="`${layerIndex}-${id || ''}`" :class="{ 'layer-animate': shouldEnableAnimation }" :style="{ animationDelay: shouldEnableAnimation ? `${layerIndex * props.animation?.delay || 0}ms` : '0s' }">
         <!-- 层边框 -->
         <template v-if="layer.shape === 'circle' || !layer.shape">
           <circle
@@ -108,7 +108,7 @@
       <g v-if="scaclStyle && isShowScale" 
          :key="id"
          :class="{ 'layer-animate': shouldEnableAnimation }" 
-         :style="{ animationDelay: shouldEnableAnimation ? `${compassData.length * props.animation.delay}ms` : '0s' }">
+         :style="{ animationDelay: shouldEnableAnimation ? `${compassData.length * props.animation?.delay || 0}ms` : '0s' }">
         <g v-for="i in 360" :key="`scale-${i}`">
           <line
             :x1="getScaleStartX(i)"
@@ -728,7 +728,7 @@ function getScaleFontSize() {
   opacity: 0;
   transform: scale(0.8);
   transform-origin: center center;
-  animation: layerFadeIn v-bind('props.animation.duration + "ms"') ease-out forwards;
+  animation: layerFadeIn v-bind('(props.animation?.duration || 0) + "ms"') ease-out forwards;
 }
 
 @keyframes layerFadeIn {

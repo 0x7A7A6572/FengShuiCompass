@@ -5,6 +5,9 @@ export default {
     preview: "theme-crice.png",
   },
   rotate: 337.5,
+  animation: {
+    enable: false,
+  },
   compassSize: {
     width: 800,
     height: 800,
