@@ -25,7 +25,8 @@ export default {
   data: [
     {
       name: "--",
-      startAngle: 45,
+      // 多边形不支持 startAngle
+      startAngle: 40,
       textColor: "white",
       vertical: false,
       togetherStyle: "empty",

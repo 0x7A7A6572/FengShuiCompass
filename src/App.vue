@@ -24,7 +24,7 @@ function handleCompassDataUpdate(newData) {
 
 <template>
   <StarryBackground />
-  <div class="gemc-layout">
+  <div class="gemc-layout dark" >
     <div class="compass-container">
       <h3 class="compass-title">SVG-FengShuiCompass</h3>
       <FengShuiCompassSvg

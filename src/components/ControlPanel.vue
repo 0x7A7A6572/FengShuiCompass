@@ -86,6 +86,7 @@
           <el-text>宫：</el-text>
           <el-select v-model="selectLattice" size="small">
             <el-option
+             dark
               v-for="(item, index) in getDataByIndex()"
               :key="index"
               :label="index"
@@ -239,7 +240,7 @@
 <script setup>
 import { ref } from "vue";
 import { VAceEditor } from "vue3-ace-editor";
-import { ElMessage } from "element-plus";
+import { ElNotification } from "element-plus";
 import themeData from "../themes/index.js";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-monokai";
@@ -323,7 +324,10 @@ function applyTheme(themeData, themeName) {
   emit("update:scaleHighlightColor", themeData.line.scaleHighlightColor);
   updateCompassData();
   currentTheme.value = themeName;
-  ElMessage.success("主题应用成功");
+  ElNotification.success({
+    title: "主题应用",
+    message: "主题应用成功"
+  });
 }
 const selectLayer = ref(0);
 const selectLayerColor = ref("#ff0000");
@@ -422,13 +426,19 @@ function updateCompassData() {
     const newData = JSON.parse(editorContent.value);
     // 验证数据结构
     if (!Array.isArray(newData)) {
-      ElMessage.error("数据格式错误：必须是一个数组");
+      ElNotification.error({
+        title: "数据格式错误",
+        message: "必须是一个数组"
+      });
       return;
     }
     // 验证每个层的数据结构
     const isValid = newData.every((layer, index) => {
       if (!layer.data || !Array.isArray(layer.data)) {
-        ElMessage.error(`第${index + 1}层数据格式错误：缺少data数组`);
+        ElNotification.error({
+          title: "数据格式错误",
+          message: `第${index + 1}层数据格式错误：缺少data数组`
+        });
         return false;
       }
       return true;
@@ -437,9 +447,15 @@ function updateCompassData() {
     if (!isValid) return;
 
     emit("update:compassData", newData);
-    ElMessage.success("罗盘数据更新成功");
+    // ElNotification.success({
+    //   title: "罗盘数据更新",
+    //   message: "罗盘数据更新成功"
+    // });
   } catch (e) {
-    ElMessage.error("JSON解析错误：" + e.message);
+    ElNotification.error({
+      title: "JSON解析错误",
+      message: e.message
+    });
   }
 }
 
