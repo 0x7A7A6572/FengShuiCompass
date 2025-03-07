@@ -282,6 +282,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  id: {
+    type: [String, Number],
+    default: ''
+  }
 });
 
 const emit = defineEmits([
@@ -293,6 +297,8 @@ const emit = defineEmits([
   "update:scaleColor",
   "update:scaleHighlightColor",
   "update:isShowScale",
+  "update:id",
+  "onConfigChange"
 ]);
 
 const showFullscreenEditor = ref(false);
@@ -322,6 +328,9 @@ function applyTheme(themeData, themeName) {
   emit("update:borderColor", themeData.line.borderColor);
   emit("update:scaleColor", themeData.line.scaleColor);
   emit("update:scaleHighlightColor", themeData.line.scaleHighlightColor);
+  if (themeData.info?.id) {
+    emit("update:id", themeData.info.id);
+  }
   updateCompassData();
   currentTheme.value = themeName;
   ElNotification.success({

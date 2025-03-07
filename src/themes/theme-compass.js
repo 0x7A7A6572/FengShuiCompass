@@ -4,6 +4,11 @@ export default {
     name: "一",
     preview: "theme-compass-preview.png",
   },
+  animation: {
+    enable: false,
+    duration: 1000,
+    delay: 100
+  },
   rotate: 0,
   autoFontSize: false,
   isShowScale: true,

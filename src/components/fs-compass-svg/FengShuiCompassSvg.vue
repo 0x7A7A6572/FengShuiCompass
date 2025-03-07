@@ -1,7 +1,14 @@
 <template>
   <div class="feng-shui-compass-svg" :style="{ width: width + 'px', height: height + 'px' }">
     <!-- 罗盘主体 -->
-    <svg :width="width" :height="height" :viewBox="`0 0 ${width} ${height}`" :style="{ transform: `rotate(${rotate}deg)` }">
+    <svg 
+      :width="width" 
+      :height="height" 
+      :viewBox="`0 0 ${width} ${height}`" 
+      :style="{ 
+        transform: `rotate(${rotate}deg)`
+      }"
+    >
       <!-- 天池圆圈 -->
       <circle
         :cx="centerPoint.x"
@@ -13,7 +20,7 @@
       />
 
       <!-- 各层圆环 -->
-      <g v-for="(layer, layerIndex) in compassData" :key="layerIndex">
+      <g v-for="(layer, layerIndex) in compassData" :key="`${layerIndex}-${id || ''}`" :class="{ 'layer-animate': shouldEnableAnimation }" :style="{ animationDelay: shouldEnableAnimation ? `${layerIndex * props.animation.delay}ms` : '0s' }">
         <!-- 层边框 -->
         <template v-if="layer.shape === 'circle' || !layer.shape">
           <circle
@@ -98,7 +105,10 @@
       </g>
 
       <!-- 刻度 -->
-      <g v-if="scaclStyle && isShowScale">
+      <g v-if="scaclStyle && isShowScale" 
+         :key="id"
+         :class="{ 'layer-animate': shouldEnableAnimation }" 
+         :style="{ animationDelay: shouldEnableAnimation ? `${compassData.length * props.animation.delay}ms` : '0s' }">
         <g v-for="i in 360" :key="`scale-${i}`">
           <line
             :x1="getScaleStartX(i)"
@@ -149,9 +159,16 @@ import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 const emit = defineEmits(['latticeClick', 'update:rotate']);
 
 const CORRECTION_ANGLE = -90;
-const TOGERTHER_STYLE_EQUALLY = 'equally';
 
 const props = defineProps({
+  animation: {
+    type: Object,
+    default: () => ({
+      enable: false,
+      duration: 500,
+      delay: 300
+    })
+  },
   isShowScale: {
     type: Boolean,
     default: true
@@ -216,8 +233,14 @@ const props = defineProps({
   tianxinCrossWidth: {
     type: Number,
     default: 2
-  }
+  },
+  id: {
+    type: [String, Number],
+    default: Array.from({length: 10}, () => Math.floor(Math.random() * 36).toString(36)).join('')
+  },
 });
+
+const shouldEnableAnimation = ref(props.animation?.enable || false);
 
 // 监听compassData变化
 watch(() => props.compassData, () => {
@@ -288,53 +311,54 @@ function rads(degrees) {
 const cachedResults = new Map();
 
 // 缓存计算函数
-function memoize(fn) {
-  return function (...args) {
-    const key = JSON.stringify(args);
-    if (!cachedResults.has(key)) {
-      cachedResults.set(key, fn.apply(this, args));
-    }
-    return cachedResults.get(key);
-  };
-}
+// function memoize(fn) {
+//   return function (...args) {
+//     const key = JSON.stringify(args);
+//     if (!cachedResults.has(key)) {
+//       cachedResults.set(key, fn.apply(this, args));
+//     }
+//     return cachedResults.get(key);
+//   };
+// }
 
 // 优化计算密集型函数
-const getLayerPath = memoize((layerIndex) => {
-  const innerRadius = getLayerRadius(layerIndex);
-  const outerRadius = getLayerRadius(layerIndex + 1);
-  const layerShape = props.compassData[layerIndex].shape || 'circle';
+// const getLayerPath = memoize((layerIndex) => {
+//   const innerRadius = getLayerRadius(layerIndex);
+//   const outerRadius = getLayerRadius(layerIndex + 1);
+//   const layerShape = props.compassData[layerIndex].shape || 'circle';
   
-  if (layerShape === 'circle') {
-    return `
-      M ${centerPoint.value.x + innerRadius * Math.cos(0)} ${centerPoint.value.y + innerRadius * Math.sin(0)}
-      A ${innerRadius} ${innerRadius} 0 1 1 ${centerPoint.value.x + innerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + innerRadius * Math.sin(2 * Math.PI)}
-      L ${centerPoint.value.x + outerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + outerRadius * Math.sin(2 * Math.PI)}
-      A ${outerRadius} ${outerRadius} 0 1 0 ${centerPoint.value.x + outerRadius * Math.cos(0)} ${centerPoint.value.y + outerRadius * Math.sin(0)}
-      Z
-    `.trim();
-  } else {
-    const sides = props.compassData[layerIndex].data.length;
-    let path = [];
+//   if (layerShape === 'circle') {
+//     return `
+//       M ${centerPoint.value.x + innerRadius * Math.cos(0)} ${centerPoint.value.y + innerRadius * Math.sin(0)}
+//       A ${innerRadius} ${innerRadius} 0 1 1 ${centerPoint.value.x + innerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + innerRadius * Math.sin(2 * Math.PI)}
+//       L ${centerPoint.value.x + outerRadius * Math.cos(2 * Math.PI)} ${centerPoint.value.y + outerRadius * Math.sin(2 * Math.PI)}
+//       A ${outerRadius} ${outerRadius} 0 1 0 ${centerPoint.value.x + outerRadius * Math.cos(0)} ${centerPoint.value.y + outerRadius * Math.sin(0)}
+//       Z
+//     `.trim();
+//   } else {
+//     const sides = props.compassData[layerIndex].data.length;
+//     let path = [];
     
-    for (let i = 0; i <= sides; i++) {
-      const angle = (i * 2 * Math.PI) / sides;
-      const x1 = centerPoint.value.x + innerRadius * Math.cos(angle);
-      const y1 = centerPoint.value.y + innerRadius * Math.sin(angle);
-      const x2 = centerPoint.value.x + outerRadius * Math.cos(angle);
-      const y2 = centerPoint.value.y + outerRadius * Math.sin(angle);
+//     for (let i = 0; i <= sides; i++) {
+//       const angle = (i * 2 * Math.PI) / sides;
+//       const x1 = centerPoint.value.x + innerRadius * Math.cos(angle);
+//       const y1 = centerPoint.value.y + innerRadius * Math.sin(angle);
+//       const x2 = centerPoint.value.x + outerRadius * Math.cos(angle);
+//       const y2 = centerPoint.value.y + outerRadius * Math.sin(angle);
       
-      if (i === 0) {
-        path.push(`M ${x1} ${y1}`);
-        path.push(`L ${x2} ${y2}`);
-      } else {
-        path.push(`L ${x2} ${y2}`);
-      }
-    }
+//       if (i === 0) {
+//         path.push(`M ${x1} ${y1}`);
+//         path.push(`L ${x2} ${y2}`);
+//       } else {
+//         path.push(`L ${x2} ${y2}`);
+//       }
+//     }
     
-    path.push('Z');
-    return path.join(' ');
-  }
-});
+//     path.push('Z');
+//     return path.join(' ');
+//   }
+// });
+
 // 清理缓存
 onMounted(() => {
   // 初始化时清理缓存
@@ -658,7 +682,6 @@ function handleLatticeClick(latticeIndex, layerIndex) {
   });
 }
 
-
 // 计算刻度文字大小
 function getScaleFontSize() {
   // 如果有设置固定大小，则使用设置的大小
@@ -700,5 +723,24 @@ function getScaleFontSize() {
   top: 0;
   left: 0;
   pointer-events: none;
+}
+.layer-animate {
+  opacity: 0;
+  transform: scale(0.8);
+  transform-origin: center center;
+  animation: layerFadeIn v-bind('props.animation.duration + "ms"') ease-out forwards;
+}
+
+@keyframes layerFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+    transform-origin: center center;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    transform-origin: center center;
+  }
 }
 </style>

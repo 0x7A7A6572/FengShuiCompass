@@ -28,6 +28,7 @@ function handleCompassDataUpdate(newData) {
     <div class="compass-container">
       <h3 class="compass-title">SVG-FengShuiCompass</h3>
       <FengShuiCompassSvg
+        :id="compassProps.info.id"
         :width="compassProps.compassSize.width"
         :height="compassProps.compassSize.height"
         :rotate="compassProps.rotate"
@@ -37,6 +38,7 @@ function handleCompassDataUpdate(newData) {
         :isShowScale="compassProps.isShowScale"
         :scaclStyle="compassProps.scaclStyle"
         :autoFontSize="compassProps.autoFontSize"
+        :animation="compassProps.animation"
         v-model:borderColor="compassProps.line.borderColor"
         v-model:scaleColor="compassProps.line.scaleColor"
         v-model:scaleHighlightColor="compassProps.line.scaleHighlightColor"
@@ -54,6 +56,7 @@ function handleCompassDataUpdate(newData) {
       v-model:borderColor="compassProps.line.borderColor"
       v-model:scaleColor="compassProps.line.scaleColor"
       v-model:scaleHighlightColor="compassProps.line.scaleHighlightColor"
+      v-model:id="compassProps.info.id"
       @update:compassData="handleCompassDataUpdate"
     />
   </div>
