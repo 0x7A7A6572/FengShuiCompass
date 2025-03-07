@@ -9,7 +9,7 @@ export default defineConfig({
     {
       name: 'copy-files',
       closeBundle() {
-        const files = ['LICENSE', 'package.json']
+        const files = ['LICENSE', 'CHANGELOG.md']
         files.forEach(file => {
           fs.copyFileSync(
             path.resolve(__dirname, file),

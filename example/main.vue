@@ -1,8 +1,9 @@
 <script setup>
 import { reactive } from "vue";
-import { FengShuiCompassSvg , themes } from "../dist/feng-shui-compass.es.js";
+// import { FengShuiCompassSvg , themes } from "../dist/feng-shui-compass.es.js";
 import "../dist/index.css";
-// import 'feng-shui-compass/dist/style.css'
+import { FengShuiCompassSvg , themes } from "feng-shui-compass";
+import 'feng-shui-compass/dist/index.css'
 
 // 罗盘配置
 const compassConfig = reactive(themes.compassTheme);
