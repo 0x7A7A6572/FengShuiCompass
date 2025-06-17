@@ -9,6 +9,21 @@
       <!-- 天池圆圈 -->
       <circle :cx="centerPoint.x" :cy="centerPoint.y" :r="tianChiRadius" :stroke="m.line.borderColor"
         :stroke-width="borderWidth" fill="none" />
+      
+      <!-- 八卦爻位符号 -->
+      <Yao v-if="layer.dataType === 'yao'"
+        v-for="(layer, layerIndex) in m.data"
+        :key="`yao-${layerIndex}`"
+        :config="{
+          radius: getLayerRadius(layerIndex),
+          angle: layer.startAngle || 0,
+          arcLength: 360 / layer.data.length,
+          layerHeight: layerHeight[layerIndex],
+          enableCurve: layer.shape === 'circle' || !layer.shape
+        }"
+        :initialBars="layer.data"
+        :size="m.compassSize.width"
+      />
 
       <!-- 各层圆环 -->
       <g v-for="(layer, layerIndex) in m.data" :key="`${layerIndex}-${m.info.id || ''}`"
@@ -99,6 +114,7 @@
 
 <script setup>
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
+import Yao from './Yao.vue';
 
 const emit = defineEmits(['latticeClick']);
 

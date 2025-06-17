@@ -1,37 +1,27 @@
 {
   "name": "feng-shui-compass",
-  "version": "2.1.1",
+  "version": "2.1.0",
   "description": "A Vue 3 component for rendering Feng Shui compass",
-  "author": "zzerx",
+  "author": "gemc",
   "license": "MIT",
-  "keywords": [
-    "vue",
-    "component",
-    "feng-shui",
-    "compass"
-  ],
+  "keywords": ["vue", "component", "feng-shui", "compass"],
   "main": "dist/feng-shui-compass.umd.js",
   "module": "dist/feng-shui-compass.es.js",
-  "types": "index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "types": "dist/types/index.d.ts",
+  "files": ["dist"],
   "repository": {
     "type": "git",
     "url": "https://github.com/0x7A7A6572/FengShuiCompass.gitt"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:lib": "vite build --config vite.lib.config.js",
-    "preview": "vite preview",
-    "example": "vite -c example/vite.config.js",
-    "example:build": "vite build -c example/vite.config.js"
+    "dev": "vite --registry=https://registry.npmjs.org/",
+    "build": "vite build --registry=https://registry.npmjs.org/",
+    "build:lib": "vite build --config vite.lib.config.js --registry=https://registry.npmjs.org/",
+    "preview": "vite preview --registry=https://registry.npmjs.org/"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.9.5",
-    "feng-shui-compass": "^2.1.1",
     "sass": "^1.85.1",
     "vue": "^3.2.25",
     "vue3-ace-editor": "^2.2.4"

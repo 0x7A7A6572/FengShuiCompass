@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<body>
+<!-- 控制面板 -->
+<div style="margin-bottom: 20px;">
+  <label>半径（曲度）: 
+    <input type="range" id="radius" min="50" max="360" value="100">
+    <span id="radiusValue">100</span>
+  </label>
+  <label>角度（位置）: 
+    <input type="range" id="angle" min="0" max="360" value="0">
+    <span id="angleValue">0°</span>
+  </label>
+  <label>弧长（跨度）: 
+    <input type="range" id="arcLength" min="30" max="360" value="30">
+    <span id="arcLengthValue">180°</span>
+  </label>
+  <label>层高（总高）: 
+    <input type="range" id="layerHeight" min="60" max="200" value="64">
+    <span id="layerHeightValue">120</span>
+  </label>
+  <label>
+    启用弯曲:
+    <input type="checkbox" id="enableCurve" checked>
+  </label>
+</div>
+
+<!-- SVG 容器（弯曲模式） -->
+<svg width="400" height="400" viewBox="0 0 400 400" id="svgCurveContainer"></svg>
+
+<!-- SVG 容器（直线模式） -->
+<svg width="400" height="400" viewBox="0 0 400 400" id="svgStraightContainer" style="display: none;"></svg>
+
+<script>
+// 爻配置（初始为乾卦 ☰）
+const bars = [
+  { id: 'bar1', color: '#ff0050', type: 'yang' }, // 上层
+  { id: 'bar2', color: '#2c3e50', type: 'yang' }, // 中层
+  { id: 'bar3', color: '#2c3ee0', type: 'yang' }  // 下层
+];
+
+// 自动计算参数（修复版）
+function calculateDimensions(layerHeight) {
+  const barCount = bars.length;
+  const barHeight = layerHeight / 7;
+  const spacing = layerHeight / 5;
+  return { 
+    barHeight: barHeight, 
+    spacing: spacing
+  };
+}
+
+function calculateArcPoint(cx, cy, radius, angle) {
+  const radians = (angle - 90) * Math.PI / 180;
+  return [
+    cx + radius * Math.cos(radians),
+    cy + radius * Math.sin(radians)
+  ];
+}
+
+function createYinPath(radius, height, startAngle, endAngle) {
+  const innerRadius = Math.max(1, radius - height);
+  const gapRatio = 0.15;
+  
+  // 计算断口位置
+  const totalAngle = endAngle - startAngle;
+  const gapAngle = totalAngle * gapRatio;
+  const segmentAngle = (totalAngle - gapAngle) / 2;
+  
+  // 生成两段弧
+  const [p1, p2] = [0,1].map(i => calculateArcPoint(200, 200, radius, startAngle + i*segmentAngle));
+  const [p3, p4] = [1,0].map(i => calculateArcPoint(200, 200, innerRadius, startAngle + i*segmentAngle));
+  
+  const [p5, p6] = [0,1].map(i => calculateArcPoint(200, 200, radius, endAngle - segmentAngle + i*segmentAngle));
+  const [p7, p8] = [1,0].map(i => calculateArcPoint(200, 200, innerRadius, endAngle - segmentAngle + i*segmentAngle));
+
+  const largeArc = segmentAngle > 180 ? 1 : 0;
+  
+  return `
+    M ${p1[0]},${p1[1]}
+    A ${radius} ${radius} 0 ${largeArc} 1 ${p2[0]},${p2[1]}
+    L ${p3[0]},${p3[1]}
+    A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${p4[0]},${p4[1]}
+    Z
+    M ${p5[0]},${p5[1]}
+    A ${radius} ${radius} 0 ${largeArc} 1 ${p6[0]},${p6[1]}
+    L ${p7[0]},${p7[1]}
+    A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${p8[0]},${p8[1]}
+    Z
+  `;
+}
+
+function updateBars() {
+  const baseRadius = parseInt(document.getElementById('radius').value);
+  const angle = parseInt(document.getElementById('angle').value);
+  const arcLength = parseInt(document.getElementById('arcLength').value);
+  const layerHeight = parseInt(document.getElementById('layerHeight').value);
+  const enableCurve = document.getElementById('enableCurve').checked;
+  
+  // 自动计算参数
+  const { barHeight, spacing } = calculateDimensions(layerHeight);
+  
+  // 更新显示
+  document.getElementById('layerHeightValue').textContent = layerHeight;
+  document.getElementById('radiusValue').textContent = baseRadius;
+  document.getElementById('angleValue').textContent = angle + '°';
+  document.getElementById('arcLengthValue').textContent = arcLength + '°';
+
+  // 显示/隐藏 SVG 容器
+  document.getElementById('svgCurveContainer').style.display = enableCurve ? 'block' : 'none';
+  document.getElementById('svgStraightContainer').style.display = enableCurve ? 'none' : 'block';
+
+  bars.forEach((bar, index) => {
+    const radius = baseRadius + (index - 1) * spacing;
+    const startAngle = angle - arcLength / 2;
+    const endAngle = angle + arcLength / 2;
+    
+    const pathCurve = document.getElementById(`${bar.id}-curve`);
+    const pathStraight = document.getElementById(`${bar.id}-straight`);
+    let dCurve = '';
+    let dStraight = '';
+    
+    if (enableCurve) {
+      // 弯曲模式
+      if (bar.type === 'yang') {
+        // 阳爻路径
+        const innerRadius = Math.max(1, radius - barHeight);
+        const [x1, y1] = calculateArcPoint(200, 200, radius, startAngle);
+        const [x2, y2] = calculateArcPoint(200, 200, radius, endAngle);
+        const [x3, y3] = calculateArcPoint(200, 200, innerRadius, endAngle);
+        const [x4, y4] = calculateArcPoint(200, 200, innerRadius, startAngle);
+        const largeArc = arcLength > 180 ? 1 : 0;
+
+        dCurve = `
+          M ${x1},${y1}
+          A ${radius} ${radius} 0 ${largeArc} 1 ${x2},${y2}
+          L ${x3},${y3}
+          A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${x4},${y4}
+          Z
+        `;
+      } else {
+        // 阴爻路径
+        dCurve = createYinPath(radius, barHeight, startAngle, endAngle);
+      }
+      pathCurve.setAttribute('d', dCurve);
+      pathCurve.setAttribute('fill', bar.color);
+    } else {
+      // 直线模式
+      const [x1, y1] = calculateArcPoint(200, 200, radius, startAngle);
+      const [x2, y2] = calculateArcPoint(200, 200, radius, endAngle);
+      if (bar.type === 'yang') {
+        // 阳爻路径
+        dStraight = `M ${x1} ${y1} L ${x2} ${y2}`;
+      } else {
+        // 阴爻路径
+        const totalLength = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)); // 计算总长度
+        const gapLength = totalLength * 0.15; // 断口长度为总长度的15%
+        const dx = (x2 - x1) / totalLength; // x方向单位向量
+        const dy = (y2 - y1) / totalLength; // y方向单位向量
+        const x3 = x1 + dx * (totalLength / 2 - gapLength / 2); // 断口起点
+        const y3 = y1 + dy * (totalLength / 2 - gapLength / 2);
+        const x4 = x1 + dx * (totalLength / 2 + gapLength / 2); // 断口终点
+        const y4 = y1 + dy * (totalLength / 2 + gapLength / 2);
+
+        dStraight = `
+          M ${x1} ${y1} L ${x3} ${y3}
+          M ${x4} ${y4} L ${x2} ${y2}
+        `;
+      }
+      // 对线条的边进行角度切边
+      const cutLength = barHeight / 2; // 切边长度
+      const cutAngle = angle; // 切边角度
+      const cutDx = Math.cos((cutAngle - 90) * Math.PI / 180) * cutLength;
+      const cutDy = Math.sin((cutAngle - 90) * Math.PI / 180) * cutLength;
+
+      const x1Cut = x1 + cutDx;
+      const y1Cut = y1 + cutDy;
+      const x2Cut = x2 - cutDx;
+      const y2Cut = y2 - cutDy;
+
+      if (bar.type === 'yang') {
+        dStraight = `M ${x1Cut} ${y1Cut} L ${x2Cut} ${y2Cut}`;
+      } else {
+        const x3Cut = x3 + cutDx;
+        const y3Cut = y3 + cutDy;
+        const x4Cut = x4 - cutDx;
+        const y4Cut = y4 - cutDy;
+        dStraight = `
+          M ${x1Cut} ${y1Cut} L ${x3Cut} ${y3Cut}
+          M ${x4Cut} ${y4Cut} L ${x2Cut} ${y2Cut}
+        `;
+      }
+      pathStraight.setAttribute('d', dStraight);
+      pathStraight.setAttribute('stroke', bar.color);
+      pathStraight.setAttribute('stroke-width', barHeight);
+      pathStraight.setAttribute('fill', 'none'); // 直线模式不需要填充
+    }
+  });
+}
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+  const svgCurve = document.getElementById('svgCurveContainer');
+  const svgStraight = document.getElementById('svgStraightContainer');
+  
+  // 创建爻路径
+  bars.forEach(bar => {
+    // 弯曲模式路径
+    const pathCurve = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathCurve.id = `${bar.id}-curve`;
+    pathCurve.setAttribute('fill', bar.color);
+    svgCurve.appendChild(pathCurve);
+    
+    // 直线模式路径
+    const pathStraight = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathStraight.id = `${bar.id}-straight`;
+    pathStraight.setAttribute('stroke', bar.color);
+    pathStraight.setAttribute('stroke-width', 5); // 默认线条粗细
+    pathStraight.setAttribute('fill', 'none'); // 直线模式不需要填充
+    svgStraight.appendChild(pathStraight);
+    
+    // 点击切换阴阳
+    pathCurve.addEventListener('click', () => {
+      bar.type = bar.type === 'yang' ? 'yin' : 'yang';
+      updateBars();
+    });
+    pathStraight.addEventListener('click', () => {
+      bar.type = bar.type === 'yang' ? 'yin' : 'yang';
+      updateBars();
+    });
+  });
+
+  // 添加圆心标记
+  const centerCurve = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  centerCurve.setAttribute('cx', 200);
+  centerCurve.setAttribute('cy', 200);
+  centerCurve.setAttribute('r', 3);
+  centerCurve.setAttribute('fill', 'red');
+  svgCurve.appendChild(centerCurve);
+
+  const centerStraight = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  centerStraight.setAttribute('cx', 200);
+  centerStraight.setAttribute('cy', 200);
+  centerStraight.setAttribute('r', 3);
+  centerStraight.setAttribute('fill', 'red');
+  svgStraight.appendChild(centerStraight);
+
+  // 绑定事件
+  ['radius', 'angle', 'arcLength', 'layerHeight', 'enableCurve'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateBars);
+  });
+  
+  updateBars();
+});
+</script>
+</body>
+</html>
