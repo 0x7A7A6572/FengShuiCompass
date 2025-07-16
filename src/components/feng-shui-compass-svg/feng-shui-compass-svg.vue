@@ -9,21 +9,18 @@
       <!-- 天池圆圈 -->
       <circle :cx="centerPoint.x" :cy="centerPoint.y" :r="tianChiRadius" :stroke="m.line.borderColor"
         :stroke-width="borderWidth" fill="none" />
-      
+
       <!-- 八卦爻位符号 -->
-      <Yao v-if="layer.dataType === 'yao'"
-        v-for="(layer, layerIndex) in m.data"
-        :key="`yao-${layerIndex}`"
-        :config="{
+      <template v-if="layer?.dataType === 'yao'">
+        <yao-view v-for="(layer, layerIndex) in m.data" :key="`yao-${layerIndex}`" :config="{
           radius: getLayerRadius(layerIndex),
           angle: layer.startAngle || 0,
           arcLength: 360 / layer.data.length,
           layerHeight: layerHeight[layerIndex],
           enableCurve: layer.shape === 'circle' || !layer.shape
-        }"
-        :initialBars="layer.data"
-        :size="m.compassSize.width"
-      />
+        }" :initialBars="layer.data" :size="m.compassSize.width" />
+      </template>
+
 
       <!-- 各层圆环 -->
       <g v-for="(layer, layerIndex) in m.data" :key="`${layerIndex}-${m.info.id || ''}`"
@@ -67,7 +64,8 @@
               :fill="Array.isArray(layer.textColor) ? layer.textColor[subIndex] : layer.textColor"
               :font-size="m.autoFontSize ? baseFontSize : layer.fontSize" text-anchor="middle"
               dominant-baseline="middle" font-family="楷书" @click="handleLatticeClick(textIndex, layerIndex)"
-              style="cursor: pointer;">{{ subText }}</text>
+              style="cursor: pointer;">{{ subText
+              }}</text>
           </g>
         </g>
 
@@ -91,30 +89,19 @@
       </g>
     </svg>
     <!-- 天心十字 -->
-        <svg v-if="m.isShowTianxinCross" class="tianxin-cross" :width="m.compassSize.width" :height="m.compassSize.height" :viewBox="`0 0 ${m.compassSize.width} ${m.compassSize.height}`">
-      <line
-        :x1="centerPoint.x - tianxinCrossSize / 2"
-        :y1="centerPoint.y"
-        :x2="centerPoint.x + tianxinCrossSize / 2"
-        :y2="centerPoint.y"
-        :stroke="m.tianxinCrossColor"
-        :stroke-width="m.tianxinCrossWidth"
-      />
-      <line
-        :x1="centerPoint.x"
-        :y1="centerPoint.y - tianxinCrossSize / 2"
-        :x2="centerPoint.x"
-        :y2="centerPoint.y + tianxinCrossSize / 2"
-        :stroke="m.tianxinCrossColor"
-        :stroke-width="m.tianxinCrossWidth"
-      />
+    <svg v-if="m.isShowTianxinCross" class="tianxin-cross" :width="m.compassSize.width" :height="m.compassSize.height"
+      :viewBox="`0 0 ${m.compassSize.width} ${m.compassSize.height}`">
+      <line :x1="centerPoint.x - tianxinCrossSize / 2" :y1="centerPoint.y" :x2="centerPoint.x + tianxinCrossSize / 2"
+        :y2="centerPoint.y" :stroke="m.tianxinCrossColor" :stroke-width="m.tianxinCrossWidth" />
+      <line :x1="centerPoint.x" :y1="centerPoint.y - tianxinCrossSize / 2" :x2="centerPoint.x"
+        :y2="centerPoint.y + tianxinCrossSize / 2" :stroke="m.tianxinCrossColor" :stroke-width="m.tianxinCrossWidth" />
     </svg>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
-import Yao from './Yao.vue';
+import YaoView from './yao-view.vue';
 
 const emit = defineEmits(['latticeClick']);
 
@@ -182,9 +169,9 @@ const centerPoint = computed(() => ({
   y: m.value.compassSize.height / 2
 }));
 
-const tianxinCrossSize = computed(() =>  {
-      return Math.max(m.value.compassSize.width, m.value.compassSize.height);
-  });
+const tianxinCrossSize = computed(() => {
+  return Math.max(m.value.compassSize.width, m.value.compassSize.height);
+});
 
 // 基础配置
 const radius = computed(() => {
@@ -620,10 +607,10 @@ function getScaleFontSize() {
 // 监听数据变化
 watch(() => props.config?.data, (newData) => {
   if (!newData) return;
-  
+
   // 清理缓存
   cachedResults.clear();
-  
+
   // 检查多边形模式下的startAngle设置
   newData.forEach((layer, index) => {
     if (layer.shape === 'polygon' && layer.startAngle) {
