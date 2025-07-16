@@ -9,7 +9,7 @@ export default defineConfig({
     {
       name: 'copy-files',
       closeBundle() {
-        const files = ['LICENSE', 'CHANGELOG.md']
+        const files = ['LICENSE', 'CHANGELOG.md', 'index.d.ts']
         files.forEach(file => {
           fs.copyFileSync(
             path.resolve(__dirname, file),
@@ -20,7 +20,7 @@ export default defineConfig({
     }],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.js'),
+      entry: resolve(__dirname, 'src/index.ts'),
       name: 'FengShuiCompass',
       fileName: (format) => `feng-shui-compass.${format}.js`
     },
@@ -39,7 +39,7 @@ export default defineConfig({
     minify: 'terser',
     emptyOutDir: true,
     // 生成类型声明文件
-    declaration: true,
+    // declaration: true,
     terserOptions: {
       compress: {
         drop_console: true,

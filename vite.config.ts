@@ -1,10 +1,16 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
   base: './', // 设置基础路径为相对路径，解决打包后资源路径问题
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src')
+    }
+  },
   build: {
     outDir: 'dist', // 输出目录
     assetsDir: 'assets', // 静态资源目录
