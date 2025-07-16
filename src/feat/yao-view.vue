@@ -1,5 +1,6 @@
 <template>
   <div class="yao-container">
+
     <svg
       :width="svgSize"
       :height="svgSize"
@@ -12,7 +13,7 @@
         :d="getBarPath(bar)"
         :stroke="bar.color"
         :stroke-width="barHeight"
-        fill="none"
+        fill="red"
         @click="toggleBarType(bar)"
       />
       <circle
@@ -34,7 +35,7 @@
         :d="getBarPath(bar)"
         :stroke="bar.color"
         :stroke-width="barHeight"
-        fill="none"
+        fill="#FF0000"
         @click="toggleBarType(bar)"
       />
       <circle
@@ -49,46 +50,47 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { YaoBar, YaoConfig, Point } from '@/types'
 
-const props = defineProps({
-  initialBars: {
-    type: Array,
-    default: () => [
-      { id: 'bar1', color: '#ff0050', type: 'yang' },
-      { id: 'bar2', color: '#2c3e50', type: 'yang' },
-      { id: 'bar3', color: '#2c3ee0', type: 'yang' }
-    ]
-  },
-  config: {
-    type: Object,
-    default: () => ({
-      radius: 100,
-      angle: 0,
-      arcLength: 30,
-      layerHeight: 64,
-      enableCurve: true
-    })
-  },
-  size: {
-    type: Number,
-    default: 400
-  }
-})
+const props = defineProps<{
+  initialBars?: YaoBar[];
+  config: YaoConfig;
+  size?: number;
+}>();
 
-const emit = defineEmits(['update:config', 'bar-click'])
+// 设置默认值
+const defaultBars: YaoBar[] = [
+  { id: 'bar1', color: '#ff0050', type: 'yang' },
+  { id: 'bar2', color: '#2c3e50', type: 'yang' },
+  { id: 'bar3', color: '#2c3ee0', type: 'yang' }
+];
 
-const svgSize = computed(() => props.size)
-const centerPoint = computed(() => ({
+const defaultConfig: YaoConfig = {
+  radius: 100,
+  angle: 0,
+  arcLength: 30,
+  layerHeight: 64,
+  enableCurve: true
+};
+
+const initialBars = props.initialBars || defaultBars;
+const config = { ...defaultConfig, ...props.config };
+const size = props.size || 400;
+
+const emit = defineEmits(['update:config', 'bar-click']);
+
+const svgSize = computed(() => size)
+const centerPoint = computed((): Point => ({
   x: svgSize.value / 2,
   y: svgSize.value / 2
 }))
 
-const bars = ref([...props.initialBars])
+const bars = ref<YaoBar[]>([...initialBars])
 
-const barHeight = computed(() => props.config.layerHeight / 7)
-const spacing = computed(() => props.config.layerHeight / 5)
+const barHeight = computed(() => config.layerHeight / 7)
+const spacing = computed(() => config.layerHeight / 5)
 
-const calculateArcPoint = (radius, angle) => {
+const calculateArcPoint = (radius: number, angle: number): [number, number] => {
   const radians = (angle - 90) * Math.PI / 180
   return [
     centerPoint.value.x + radius * Math.cos(radians),
@@ -96,7 +98,7 @@ const calculateArcPoint = (radius, angle) => {
   ]
 }
 
-const createYinPath = (radius, startAngle, endAngle) => {
+const createYinPath = (radius: number, startAngle: number, endAngle: number): string => {
   const midAngle = (startAngle + endAngle) / 2
   const [startX, startY] = calculateArcPoint(radius, startAngle)
   const [midX, midY] = calculateArcPoint(radius, midAngle)
@@ -105,10 +107,10 @@ const createYinPath = (radius, startAngle, endAngle) => {
   return `M ${startX} ${startY} A ${radius} ${radius} 0 0 1 ${midX} ${midY} M ${midX} ${midY} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`
 }
 
-const getBarPath = (bar) => {
-  const startAngle = props.config.angle - props.config.arcLength / 2
-  const endAngle = props.config.angle + props.config.arcLength / 2
-  const radius = props.config.radius
+const getBarPath = (bar: YaoBar): string => {
+  const startAngle = config.angle - config.arcLength / 2
+  const endAngle = config.angle + config.arcLength / 2
+  const radius = config.radius
 
   if (bar.type === 'yin') {
     return createYinPath(radius, startAngle, endAngle)
@@ -122,7 +124,7 @@ const getBarPath = (bar) => {
   }
 }
 
-const toggleBarType = (bar) => {
+const toggleBarType = (bar: YaoBar) => {
   bar.type = bar.type === 'yang' ? 'yin' : 'yang'
   emit('bar-click', bar)
 }

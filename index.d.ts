@@ -55,6 +55,29 @@ declare module 'feng-shui-compass' {
     config: CompassConfig
   }
 
+  export interface Star {
+    id: string;
+    x: string;
+    y: string;
+  }
+
+  export interface Line {
+    start: {
+      x: string;
+      y: string;
+    };
+    end: {
+      x: string;
+      y: string;
+    };
+  }
+
+  export interface Constellation {
+    name: string;
+    stars: Star[];
+    lines: Line[];
+  }
+
   // 导出组件
   export const FengShuiCompassSvg: Component<FengShuiCompassProps>
   

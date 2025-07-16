@@ -1,23 +1,23 @@
-<script setup>
+<script setup lang="ts">
 import FengShuiCompassSvg from "./components/feng-shui-compass-svg/feng-shui-compass-svg.vue";
 import StarryBackground from "./components/starry-background.vue";
 import ControlPanel from "./components/control-panel.vue";
 import "element-plus/dist/index.css";
-import compassTheme from "./themes/theme-compass.js";
+import compassTheme from "./themes/theme-compass";
+import type { LatticeClickEvent, ConfigChangeEvent, ThemeItem } from "@/types";
 
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 
-const compassProps = ref(JSON.parse(JSON.stringify(compassTheme)));
+const compassProps = ref<ThemeItem>(JSON.parse(JSON.stringify(compassTheme)));
 
-const refControlPanel = ref(null);
+const refControlPanel = ref<InstanceType<typeof ControlPanel> | null>(null);
 
-function handleLatticeClick(event) {
-  refControlPanel.value.updateLayerLatticeIndex(event);
+function handleLatticeClick(event: LatticeClickEvent) {
+  refControlPanel.value?.updateLayerLatticeIndex(event);
 }
 
-function handleConfigChange(config) {
-  // Object.assign(compassProps, config.data);
-  compassProps.value = config.data
+function handleConfigChange(config: ConfigChangeEvent) {
+  compassProps.value = config.data;
 }
 </script>
 

@@ -1,4 +1,5 @@
-export default {
+import type { FengShuiCompassConfig } from "@/types";
+const theme: FengShuiCompassConfig = {
   info: {
     id: 4,
     name: "四",
@@ -25,8 +26,8 @@ export default {
   data: [
     {
       name: "--",
-      // 多边形不支持 startAngle
-      startAngle: 40,
+      // 多边形（polygon）不支持 startAngle
+      // startAngle: 40,
       textColor: "white",
       vertical: false,
       togetherStyle: "empty",
@@ -40,34 +41,6 @@ export default {
         "最大凶",
         "小凶",
         "中凶",
-      ],
-    },
-    {
-      name: "--",
-      startAngle: 0,
-      textColor: "white",
-      vertical: false,
-      togetherStyle: "empty",
-      shape: "polygon",
-      data: ["伏位", "五鬼", "天医", "生气", "延年", "绝命", "祸害", "六杀"],
-    },
-    {
-      name: ["后先天八卦", "先天八卦", "龙上八煞"],
-      startAngle: 0,
-      fontSize: 18,
-      textColor: ["white", "red", "white"],
-      vertical: false,
-      togetherStyle: "equally",
-      shape: "polygon",
-      data: [
-        ["坎", "☰", "辰"],
-        ["艮", "☲", "寅"],
-        ["震", "☱", "申"],
-        ["巽", "☴", "酉"],
-        ["离", "☵", "亥"],
-        ["坤", "☶", "卯"],
-        ["兑", "☳", "巳"],
-        ["乾", "☷", "午"],
       ],
     },
     {
@@ -89,3 +62,4 @@ export default {
     },
   ],
 };
+export default theme;

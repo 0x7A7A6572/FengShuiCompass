@@ -56,20 +56,19 @@
   </svg>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import twentyEightConstellations from "../data/twentyEightConstellations";
+import type { Star } from '@/types';
 
-const props = defineProps({
-  width: {
-    type: Number,
-    default: Math.max(window.innerWidth, window.innerHeight),
-  },
-  height: {
-    type: Number,
-    default: Math.max(window.innerWidth, window.innerHeight),
-  },
-});
+const props = defineProps<{
+  width?: number;
+  height?: number;
+}>();
+
+// 设置默认值
+const width = props.width || Math.max(window.innerWidth, window.innerHeight);
+const height = props.height || Math.max(window.innerWidth, window.innerHeight);
 
 // 二十八星宿数据
 const mansions = ref(twentyEightConstellations);
@@ -79,18 +78,15 @@ const constellationLines = ref([]);
 const animationFrame = ref(null);
 
 // 生成随机星星
-function generateStars(count = 200) {
-  const newStars = [];
+function generateStars(count: number = 200): void {
+  const newStars: Star[] = [];
   for (let i = 0; i < count; i++) {
     newStars.push({
-      id: i,
-      x: Math.random() * props.width,
-      y: Math.random() * props.height,
+      x: Math.random() * width,
+      y: Math.random() * height,
       size: Math.random() * 2 + 1,
       opacity: Math.random() * 0.5 + 0.5,
-      twinkleSpeed: Math.random() * 3 + 2,
-      moveX: 0,
-      moveY: 0,
+      speed: Math.random() * 3 + 2,
     });
   }
   stars.value = newStars;

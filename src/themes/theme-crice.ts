@@ -1,4 +1,5 @@
-export default {
+import type { FengShuiCompassConfig } from "@/types";
+const theme: FengShuiCompassConfig = {
   info:{
     id: 1,
     name: "二",
@@ -70,3 +71,4 @@ export default {
     },
   ],
 };
+export default theme;
