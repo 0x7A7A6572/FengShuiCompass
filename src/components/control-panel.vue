@@ -39,7 +39,7 @@
       <div class="control-section">
         <el-text class="sub-title">罗盘大小</el-text>
         <div class="flex-center">
-          <el-text>宽度：</el-text>
+          <el-text>罗盘宽度：</el-text>
           <el-slider
             v-model="currentTheme.compassSize.width"
             :min="400"
@@ -54,17 +54,32 @@
           </el-slider>
         </div>
         <div class="flex-center">
-          <el-text>高度：</el-text>
+          <el-text>罗盘高度：</el-text>
           <el-slider
             v-model="currentTheme.compassSize.height"
             :min="400"
-            :max="1600"
-            :step="100"
+            :max="1000"
+            :step="50"
             show-stops
             @input="handleConfigChange"
           >
             <template #marker>
               {{ currentTheme.compassSize.height }}px
+            </template>
+          </el-slider>
+        </div>
+        <div class="flex-center">
+          <el-text>天池半径：</el-text>
+          <el-slider
+            v-model="currentTheme.compassSize.tianChiRadius"
+            :min="50"
+            :max="200"
+            :step="50"
+            show-stops
+            @input="handleConfigChange"
+          >
+            <template #marker>
+              {{ currentTheme.compassSize.tianChiRadius || '自动' }}{{ currentTheme.compassSize.tianChiRadius ? 'px' : '' }}
             </template>
           </el-slider>
         </div>
@@ -274,12 +289,21 @@ const currentThemeId = ref<string | number>(themes.value[0].id);
 function applyTheme(themeData: ThemeInfopPreview) {
   editorContent.value = JSON.stringify(themeData.data, null, 2);
 
+  // 确保 compassSize 包含 tianChiRadius 属性
+  const themeWithTianChi = {
+    ...themeData.data,
+    compassSize: {
+      ...themeData.data.compassSize,
+      tianChiRadius: themeData.data.compassSize.tianChiRadius || undefined
+    }
+  };
+
   emit("onConfigChange", {
     type: "theme",
-    data: themeData.data,
+    data: themeWithTianChi,
   });
 
-  currentTheme.value = themeData.data;
+  currentTheme.value = themeWithTianChi;
   currentThemeId.value = themeData.id;
 
   ElNotification.success({

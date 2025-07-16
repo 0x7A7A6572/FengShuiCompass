@@ -4,6 +4,7 @@
 export interface CompassSize {
   width: number;
   height: number;
+  tianChiRadius?: number;
 }
 
 // 线条样式配置

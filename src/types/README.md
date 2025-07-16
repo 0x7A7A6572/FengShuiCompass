@@ -34,7 +34,10 @@ import type * as Types from '@/types';
 
 - `FengShuiCompassConfig` - 罗盘主配置接口
 - `Layer` - 层数据配置
-- `CompassSize` - 罗盘尺寸
+- `CompassSize` - 罗盘尺寸配置
+  - `width: number` - 罗盘宽度
+  - `height: number` - 罗盘高度
+  - `tianChiRadius?: number` - 天池圆圈半径（可选，不设置时自动计算为罗盘半径的10%）
 - `LineStyle` - 线条样式配置
 - `ScaleStyle` - 刻度样式配置
 - `AnimationConfig` - 动画配置

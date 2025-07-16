@@ -286,7 +286,14 @@ const radius = computed(() => {
     maxScaleSpace;
   return Math.max(availableSpace, 0); // 确保半径不为负
 });
-const tianChiRadius = computed(() => radius.value * 0.1);
+const tianChiRadius = computed(() => {
+  // 如果配置中指定了 tianChiRadius，则使用配置值
+  if (m.value.compassSize.tianChiRadius !== undefined) {
+    return m.value.compassSize.tianChiRadius;
+  }
+  // 否则使用默认计算方式：半径的 10%
+  return radius.value * 0.1;
+});
 const borderWidth = 1;
 
 // 计算每层高度

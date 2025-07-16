@@ -1,14 +1,15 @@
 import type { FengShuiCompassConfig } from "@/types";
 const theme: FengShuiCompassConfig = {
   info: {
-    id: 4,
-    name: "四",
+    id: 5,
+    name: "5",
     preview: "theme-polygon-preview.png",
   },
   rotate: 337.5,
   compassSize: {
     width: 800,
     height: 800,
+    tianChiRadius: 200,
   },
   // layerFilt: [],
   latticeFill: [],
@@ -24,25 +25,6 @@ const theme: FengShuiCompassConfig = {
   },
   isShowTianxinCross: true,
   data: [
-    {
-      name: "--",
-      // 多边形（polygon）不支持 startAngle
-      // startAngle: 40,
-      textColor: "white",
-      vertical: false,
-      togetherStyle: "empty",
-      shape: "polygon",
-      data: [
-        "小吉",
-        "大凶",
-        "大吉",
-        "最大吉",
-        "中吉",
-        "最大凶",
-        "小凶",
-        "中凶",
-      ],
-    },
     {
       name: "方位",
       startAngle: 0,

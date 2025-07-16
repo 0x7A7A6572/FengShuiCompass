@@ -7,6 +7,7 @@ declare module 'feng-shui-compass' {
     compassSize: {
       width: number
       height: number
+      tianChiRadius?: number
     }
     latticeFill: [number, number, string][]
     scaclStyle: {
