@@ -317,7 +317,7 @@ const selectLattice = ref(0);
 const selectLayerColor = ref("#ff0000");
 const selectLatticeColor = ref("#00ff00");
 const selectLatticeTextColor = ref("#ffffff");
-const editorContent = ref(JSON.stringify(props.config.data, null, 2));
+const editorContent = ref(JSON.stringify(props.config, null, 2));
 
 function getDataByIndex() {
   return props.config.data[selectLayer.value]?.data || [];
@@ -432,16 +432,23 @@ function updateLayerLatticeIndex(event: { layerIndex: number; latticeIndex: numb
 function updateCompassData() {
   try {
     const newData = JSON.parse(editorContent.value);
-    // 验证数据结构
-    if (!Array.isArray(newData)) {
+    // 验证数据结构：完整 theme 对象格式
+    if (!newData || typeof newData !== 'object') {
       ElNotification.error({
         title: "数据格式错误",
-        message: "必须是一个数组",
+        message: "数据必须是一个对象",
+      });
+      return;
+    }
+    if (!Array.isArray(newData.data)) {
+      ElNotification.error({
+        title: "数据格式错误",
+        message: "必须包含 data 数组",
       });
       return;
     }
     // 验证每个层的数据结构
-    const isValid = newData.every((layer, index) => {
+    const isValid = newData.data.every((layer: any, index: number) => {
       if (!layer.data || !Array.isArray(layer.data)) {
         ElNotification.error({
           title: "数据格式错误",
@@ -454,9 +461,17 @@ function updateCompassData() {
 
     if (!isValid) return;
 
+    // 更新 currentTheme 为用户编辑的新数据
+    currentTheme.value = newData;
+
     emit("onConfigChange", {
       type: "theme",
-      data: currentTheme.value,
+      data: newData,
+    });
+
+    ElNotification.success({
+      title: "更新成功",
+      message: "罗盘数据已更新",
     });
   } catch (e: any) {
     ElNotification.error({
